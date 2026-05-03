@@ -15,15 +15,35 @@
       background: #000000;
       color: #ffffff;
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: center;
       line-height: 1.6;
+      transition: background 0.4s;
     }
 
     .container {
       max-width: 620px;
       width: 100%;
       text-align: center;
+      position: relative;
+    }
+
+    .toggle-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      border: none;
+      width: 48px;
+      height: 48px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+      transition: transform 0.3s;
+    }
+
+    .toggle-btn:hover {
+      transform: rotate(20deg);
     }
 
     h1 {
@@ -46,8 +66,8 @@
       width: 200px;
       margin: 0 auto;
       padding: 16px 20px;
-      background: rgba(255, 255, 255, 0.021);
-      border: 1.0px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 16px;
       text-decoration: none;
       color: #ffffff;
@@ -55,42 +75,70 @@
       font-weight: 500;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
       backdrop-filter: blur(20px);
-      transition: all 0.15s ease;
+      transition: all 0.25s ease;
       text-align: center;
     }
 
     .link:hover {
-      transform: translateY(-2px);
+      transform: translateY(-3px);
       background: rgba(255, 255, 255, 0.12);
       border-color: rgba(255, 255, 255, 0.25);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
     }
 
-    @media (prefers-color-scheme: light) {
-      body {
-        background: #f8f9fa;
-        color: #1a1a1a;
-      }
-      .link {
-        background: rgba(255, 255, 255, 0.85);
-        border: 1px solid rgba(0, 0, 0, 0.08);
-        color: #1a1a1a;
-      }
+    /* Light Mode */
+    body.light {
+      background: #ffffff;          /* Changed to pure white */
+      color: #1a1a1a;
+    }
+
+    body.light h1 {
+      color: #1a1a1a;
+    }
+
+    body.light .link {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      color: #1a1a1a;
+      box-shadow: none;
+    }
+
+    body.light .link:hover {
+      background: white;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
   </style>
 </head>
 <body>
   <div class="container">
+    <button class="toggle-btn" id="theme-toggle">
+      <img src="sun.svg" alt="Light mode" width="28" height="28">
+    </button>
     <h1>Newsfeed</h1>
 
     <div class="links">
-      <a href="https://x.com/home" class="link" target="_blank" rel="noopener noreferrer">X</a>
-      <a href="https://threads.com" class="link" target="_blank" rel="noopener noreferrer">Threads</a>
-      <a href="https://instagram.com/explore" class="link" target="_blank" rel="noopener noreferrer">Instagram</a>
-      <a href="https://youtube.com/feed/subscriptions" class="link" target="_blank" rel="noopener noreferrer">YouTube</a>
-      <a href="https://inoreader.com/all_articles" class="link" target="_blank" rel="noopener noreferrer">Inoreader</a>
-      <a href="https://app.raindrop.io/my/-1" class="link" target="_blank" rel="noopener noreferrer">Raindrop</a>
+      <a href="https://9to5mac.com" class="link" target="_blank">9to5Mac</a>
+      <a href="https://x.com/home" class="link" target="_blank">X</a>
+      <a href="https://threads.com" class="link" target="_blank">Threads</a>
+      <a href="https://instagram.com/explore" class="link" target="_blank">Instagram</a>
+      <a href="https://youtube.com/feed/subscriptions" class="link" target="_blank">YouTube</a>
+      <a href="https://inoreader.com/all_articles" class="link" target="_blank">Inoreader</a>
+      <a href="https://app.raindrop.io/my/-1" class="link" target="_blank">Raindrop</a>
     </div>
   </div>
+
+  <script>
+    const toggleBtn = document.getElementById('theme-toggle');
+    const body = document.body;
+
+    toggleBtn.addEventListener('click', () => {
+      body.classList.toggle('light');
+      
+      if (body.classList.contains('light')) {
+        toggleBtn.innerHTML = `<img src="moon.svg" alt="Dark mode" width="28" height="28">`;
+      } else {
+        toggleBtn.innerHTML = `<img src="sun.svg" alt="Light mode" width="28" height="28">`;
+      }
+    });
+  </script>
 </body>
 </html>
