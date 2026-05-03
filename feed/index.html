@@ -25,25 +25,6 @@
       max-width: 620px;
       width: 100%;
       text-align: center;
-      position: relative;
-    }
-
-    .toggle-btn {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: transparent;
-      border: none;
-      width: 48px;
-      height: 48px;
-      cursor: pointer;
-      padding: 8px;
-      border-radius: 50%;
-      transition: transform 0.3s;
-    }
-
-    .toggle-btn:hover {
-      transform: rotate(20deg);
     }
 
     h1 {
@@ -87,7 +68,7 @@
 
     /* Light Mode */
     body.light {
-      background: #ffffff;          /* Changed to pure white */
+      background: #ffffff;
       color: #1a1a1a;
     }
 
@@ -106,17 +87,30 @@
       background: white;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
+
+    .toggle-btn {
+      background: transparent;
+      border: none;
+      width: 48px;
+      height: 48px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+      transition: transform 0.3s;
+      margin: 30px auto 0;
+      display: block;
+    }
+
+    .toggle-btn:hover {
+      transform: rotate(20deg);
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <button class="toggle-btn" id="theme-toggle">
-      <img src="sun.svg" alt="Light mode" width="28" height="28">
-    </button>
     <h1>Newsfeed</h1>
 
     <div class="links">
-      <a href="https://9to5mac.com" class="link" target="_blank">9to5Mac</a>
       <a href="https://x.com/home" class="link" target="_blank">X</a>
       <a href="https://threads.com" class="link" target="_blank">Threads</a>
       <a href="https://instagram.com/explore" class="link" target="_blank">Instagram</a>
@@ -124,6 +118,10 @@
       <a href="https://inoreader.com/all_articles" class="link" target="_blank">Inoreader</a>
       <a href="https://app.raindrop.io/my/-1" class="link" target="_blank">Raindrop</a>
     </div>
+
+    <button class="toggle-btn" id="theme-toggle">
+      <img src="sun.svg" alt="Light mode" width="28" height="28">
+    </button>
   </div>
 
   <script>
