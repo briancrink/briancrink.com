@@ -1,1 +1,123 @@
-Hello World
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Brian Crink</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      margin: 0;
+      padding: 40px 20px;
+      min-height: 100vh;
+      background: #000000;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.6;
+      transition: background 0.4s;
+    }
+
+    .container {
+      max-width: 620px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      margin: 40px 0 20px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .icons {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .icon {
+      font-size: 2.2rem;
+      text-decoration: none;
+      transition: transform 0.2s;
+    }
+
+    .icon:hover {
+      transform: scale(1.2);
+    }
+
+    /* Light Mode */
+    body.light {
+      background: #ffffff;
+      color: #1a1a1a;
+    }
+
+    body.light h2 {
+      color: #1a1a1a;
+    }
+
+    .toggle-btn {
+      background: transparent;
+      border: none;
+      width: 48px;
+      height: 48px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+      transition: transform 0.3s;
+      margin: 60px auto 0;
+      display: block;
+    }
+
+    .toggle-btn:hover {
+      transform: rotate(20deg);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Follow</h2>
+    <div class="icons">
+      <!-- Add your social icons here -->
+      <a href="https://x.com/briancrink" class="icon" target="_blank">𝕏</a>
+      <a href="https://threads.net/@briancrink" class="icon" target="_blank">🧵</a>
+      <a href="https://instagram.com/briancrink" class="icon" target="_blank">📷</a>
+    </div>
+
+    <h2>Connect</h2>
+    <div class="icons">
+      <!-- Add more icons here -->
+    </div>
+
+    <h2>Join</h2>
+    <div class="icons">
+      <!-- Add more icons here -->
+    </div>
+
+    <button class="toggle-btn" id="theme-toggle">
+      <img src="icons/sun.svg" alt="Light mode" width="28" height="28">
+    </button>
+  </div>
+
+  <script>
+    const toggleBtn = document.getElementById('theme-toggle');
+    const body = document.body;
+
+    toggleBtn.addEventListener('click', () => {
+      body.classList.toggle('light');
+      
+      if (body.classList.contains('light')) {
+        toggleBtn.innerHTML = `<img src="icons/moon.svg" alt="Dark mode" width="28" height="28">`;
+      } else {
+        toggleBtn.innerHTML = `<img src="icons/sun.svg" alt="Light mode" width="28" height="28">`;
+      }
+    });
+  </script>
+</body>
+</html>
