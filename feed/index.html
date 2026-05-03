@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Newsfeed</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      margin: 0;
+      padding: 40px 20px;
+      min-height: 100vh;
+      background: #000000;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 620px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      margin-bottom: 60px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .links {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .link {
+      display: block;
+      width: 200px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      background: rgba(255, 255, 255, 0.021);
+      border: 1.0px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      text-decoration: none;
+      color: #ffffff;
+      font-size: 1.05rem;
+      font-weight: 500;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(20px);
+      transition: all 0.15s ease;
+      text-align: center;
+    }
+
+    .link:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    @media (prefers-color-scheme: light) {
+      body {
+        background: #f8f9fa;
+        color: #1a1a1a;
+      }
+      .link {
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        color: #1a1a1a;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Newsfeed</h1>
+
+    <div class="links">
+      <a href="https://x.com/home" class="link" target="_blank" rel="noopener noreferrer">X</a>
+      <a href="https://threads.com" class="link" target="_blank" rel="noopener noreferrer">Threads</a>
+      <a href="https://instagram.com/explore" class="link" target="_blank" rel="noopener noreferrer">Instagram</a>
+      <a href="https://youtube.com/feed/subscriptions" class="link" target="_blank" rel="noopener noreferrer">YouTube</a>
+      <a href="https://inoreader.com/all_articles" class="link" target="_blank" rel="noopener noreferrer">Inoreader</a>
+      <a href="https://app.raindrop.io/my/-1" class="link" target="_blank" rel="noopener noreferrer">Raindrop</a>
+    </div>
+  </div>
+</body>
+</html>
