@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link rel="icon" href="../icons/favicon.png" type="image/png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="../icons/favicon-white.png" type="image/png" media="(prefers-color-scheme: dark)">
   <title>Newsfeed</title>
@@ -133,6 +133,23 @@
     toggleBtn.addEventListener('click', () => {
       body.classList.toggle('light');
       
+      if (body.classList.contains('light')) {
+        toggleBtn.innerHTML = `<img src="../icons/moon.png" alt="Dark mode" width="28" height="28">`;
+      } else {
+        toggleBtn.innerHTML = `<img src="../icons/sun.png" alt="Light mode" width="28" height="28">`;
+      }
+    });
+
+    // Hover effect (yellow icons)
+    toggleBtn.addEventListener('mouseenter', () => {
+      if (body.classList.contains('light')) {
+        toggleBtn.innerHTML = `<img src="../icons/moon-hover.png" alt="Dark mode" width="28" height="28">`;
+      } else {
+        toggleBtn.innerHTML = `<img src="../icons/sun-hover.png" alt="Light mode" width="28" height="28">`;
+      }
+    });
+
+    toggleBtn.addEventListener('mouseleave', () => {
       if (body.classList.contains('light')) {
         toggleBtn.innerHTML = `<img src="../icons/moon.png" alt="Dark mode" width="28" height="28">`;
       } else {
