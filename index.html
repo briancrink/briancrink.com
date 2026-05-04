@@ -56,7 +56,6 @@
       transform: scale(1.2);
     }
 
-    /* Light Mode */
     body.light {
       background: #ffffff;
       color: #1a1a1a;
@@ -105,7 +104,7 @@
     </div>
 
     <button class="toggle-btn" id="theme-toggle">
-      <img src="icons/sun.svg" alt="Light mode" width="28" height="28">
+      <img src="icons/sun.png" alt="Light mode" width="28" height="28">
     </button>
   </div>
 
@@ -117,9 +116,9 @@
       body.classList.toggle('light');
       
       if (body.classList.contains('light')) {
-        toggleBtn.innerHTML = `<img src="icons/moon.svg" alt="Dark mode" width="28" height="28">`;
+        toggleBtn.innerHTML = `<img src="icons/moon.png" alt="Dark mode" width="28" height="28">`;
       } else {
-        toggleBtn.innerHTML = `<img src="icons/sun.svg" alt="Light mode" width="28" height="28">`;
+        toggleBtn.innerHTML = `<img src="icons/sun.png" alt="Light mode" width="28" height="28">`;
       }
     });
   </script>
