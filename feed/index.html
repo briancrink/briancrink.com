@@ -21,6 +21,13 @@
       justify-content: center;
       line-height: 1.6;
       transition: background 0.4s;
+      opacity: 0;                    /* Start hidden */
+      animation: fadeIn 1.3s forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
     }
 
     .container {
