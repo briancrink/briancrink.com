@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <link rel="icon" href="icons/favicon.png" type="image/png" media="(prefers-color-scheme: light)">
-  <link rel="icon" href="icons/favicon-white.png" type="image/png" media="(prefers-color-scheme: dark)">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon-dark.png" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="../icons/favicon.png" type="image/png" media="(prefers-color-scheme: light)">
+  <link rel="icon" href="../icons/favicon-white.png" type="image/png" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+  <link rel="apple-touch-icon" href="../icons/apple-touch-icon-dark.png" media="(prefers-color-scheme: dark)">
   <title>Brian Crink</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
@@ -88,13 +88,13 @@
     <h2>Follow</h2>
 <div class="icons">
       <a href="https://x.com/briancrink" class="icon" target="_blank">
-        <img src="icons/color/x.png" alt="X" width="45" height="45">
+        <img src="../icons/color/x.png" alt="X" width="45" height="45">
       </a>
       <a href="https://threads.net/@briancrink" class="icon" target="_blank">
-        <img src="icons/color/threads.png" alt="Threads" width="45" height="45">
+        <img src="../icons/color/threads.png" alt="Threads" width="45" height="45">
       </a>
       <a href="https://instagram.com/briancrink" class="icon" target="_blank">
-        <img src="icons/color/instagram.png" alt="Instagram" width="40" height="40">
+        <img src="../icons/color/instagram.png" alt="Instagram" width="40" height="40">
       </a>
     </div>
 
@@ -106,18 +106,18 @@
     <h2>Join</h2>
 <div class="icons">
       <a href="https://access.edu" class="icon" target="_blank">
-        <img src="icons/color/accessedu.png" alt="AccessEdu" width="45" height="45">
+        <img src="../icons/color/accessedu.png" alt="AccessEdu" width="45" height="45">
       </a>
       <a href="https://meetup.com/briancrink" class="icon" target="_blank">
-        <img src="icons/color/meetup.png" alt="Meetup" width="45" height="45">
+        <img src="../icons/color/meetup.png" alt="Meetup" width="45" height="45">
       </a>
       <a href="https://github.com/briancrink" class="icon" target="_blank">
-        <img src="icons/color/github.png" alt="Github" width="50" height="50">
+        <img src="../icons/color/github.png" alt="Github" width="50" height="50">
       </a>
     </div>
 
     <button class="toggle-btn" id="theme-toggle">
-      <img src="icons/sun.png" alt="Light mode" width="28" height="28">
+      <img src="../icons/sun.png" alt="Light mode" width="28" height="28">
     </button>
   </div>
 
@@ -129,26 +129,26 @@
       body.classList.toggle('light');
       
       if (body.classList.contains('light')) {
-        toggleBtn.innerHTML = `<img src="icons/moon.png" alt="Dark mode" width="28" height="28">`;
+        toggleBtn.innerHTML = `<img src="../icons/moon.png" alt="Dark mode" width="28" height="28">`;
       } else {
-        toggleBtn.innerHTML = `<img src="icons/sun.png" alt="Light mode" width="28" height="28">`;
+        toggleBtn.innerHTML = `<img src="../icons/sun.png" alt="Light mode" width="28" height="28">`;
       }
     });
 
     // Hover effect for yellow icons
     toggleBtn.addEventListener('mouseenter', () => {
       if (body.classList.contains('light')) {
-        toggleBtn.innerHTML = `<img src="icons/moon-hover.png" alt="Dark mode" width="28" height="28">`;
+        toggleBtn.innerHTML = `<img src="../icons/moon-hover.png" alt="Dark mode" width="28" height="28">`;
       } else {
-        toggleBtn.innerHTML = `<img src="icons/sun-hover.png" alt="Light mode" width="28" height="28">`;
+        toggleBtn.innerHTML = `<img src="../icons/sun-hover.png" alt="Light mode" width="28" height="28">`;
       }
     });
 
     toggleBtn.addEventListener('mouseleave', () => {
       if (body.classList.contains('light')) {
-        toggleBtn.innerHTML = `<img src="icons/moon.png" alt="Dark mode" width="28" height="28">`;
+        toggleBtn.innerHTML = `<img src="../icons/moon.png" alt="Dark mode" width="28" height="28">`;
       } else {
-        toggleBtn.innerHTML = `<img src="icons/sun.png" alt="Light mode" width="28" height="28">`;
+        toggleBtn.innerHTML = `<img src="../icons/sun.png" alt="Light mode" width="28" height="28">`;
       }
     });
   </script>
