@@ -85,10 +85,9 @@
       flex: 1;
     }
 
-    .toggle-btn {
+    .toggle-btn, .download-btn {
       position: absolute;
       top: 50%;
-      right: 14px;
       transform: translateY(-50%);
       background: transparent;
       border: none;
@@ -99,6 +98,14 @@
       border-radius: 50%;
       transition: transform 0.3s;
       z-index: 10;
+    }
+
+    .toggle-btn {
+      right: 14px;
+    }
+
+    .download-btn {
+      right: 56px;
     }
 
     .toggle-btn:hover {
@@ -177,9 +184,13 @@
         <div class="light green"></div>
       </div>
       <div class="terminal-title">~/resume</div>
-      
+
+      <button class="download-btn" id="download-btn" onclick="window.open('/resume.doc', '_blank')">
+        <img src="../icons/light/download.png" alt="Download Resume" width="24" height="24">
+      </button>
+
       <button class="toggle-btn" id="theme-toggle">
-        <img src="../icons/sun.png" alt="Light mode" width="24" height="24">
+        <img src="../icons/sun.png" alt="Light mode" width="28" height="28">
       </button>
     </div>
 
@@ -204,25 +215,25 @@
     </div>
   </div>
 
-    <button class="toggle-btn" id="theme-toggle">
-      <img src="../icons/sun.png" alt="Light mode" width="28" height="28">
-    </button>
-  </div>
-
   <script>
     const toggleBtn = document.getElementById('theme-toggle');
+    const downloadBtn = document.getElementById('download-btn');
     const body = document.body;
 
+    // Theme toggle
     toggleBtn.addEventListener('click', () => {
       body.classList.toggle('light');
       
       if (body.classList.contains('light')) {
         toggleBtn.innerHTML = `<img src="../icons/moon.png" alt="Dark mode" width="28" height="28">`;
+        downloadBtn.innerHTML = `<img src="../icons/dark/download.png" alt="Download Resume" width="24" height="24">`;
       } else {
         toggleBtn.innerHTML = `<img src="../icons/sun.png" alt="Light mode" width="28" height="28">`;
+        downloadBtn.innerHTML = `<img src="../icons/light/download.png" alt="Download Resume" width="24" height="24">`;
       }
     });
 
+    // Hover for toggle button
     toggleBtn.addEventListener('mouseenter', () => {
       if (body.classList.contains('light')) {
         toggleBtn.innerHTML = `<img src="../icons/moon-hover.png" alt="Dark mode" width="28" height="28">`;
@@ -236,6 +247,19 @@
         toggleBtn.innerHTML = `<img src="../icons/moon.png" alt="Dark mode" width="28" height="28">`;
       } else {
         toggleBtn.innerHTML = `<img src="../icons/sun.png" alt="Light mode" width="28" height="28">`;
+      }
+    });
+
+    // Hover for download button
+    downloadBtn.addEventListener('mouseenter', () => {
+      downloadBtn.innerHTML = `<img src="../icons/color/download.png" alt="Download Resume" width="24" height="24">`;
+    });
+
+    downloadBtn.addEventListener('mouseleave', () => {
+      if (body.classList.contains('light')) {
+        downloadBtn.innerHTML = `<img src="../icons/dark/download.png" alt="Download Resume" width="24" height="24">`;
+      } else {
+        downloadBtn.innerHTML = `<img src="../icons/light/download.png" alt="Download Resume" width="24" height="24">`;
       }
     });
   </script>
