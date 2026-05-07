@@ -19,7 +19,7 @@
       background: #000000;
       color: #ffffff;
       display: flex;
-      align-items: center;
+      align-items: flex-start;      /* flex-start or center */
       justify-content: center;
       line-height: 1.6;
       transition: background 0.4s;
@@ -32,7 +32,12 @@
       to   { opacity: 1; }
     }
 
-    .container { max-width: 620px; width: 100%; text-align: center; }
+    .container { 
+      max-width: 620px; 
+      width: 100%; 
+      text-align: center;
+      margin-top: 150px;             /* Controls how high the content sits */
+     }
 
     h2 {
       font-size: 1.8rem;
