@@ -161,6 +161,22 @@
         toggleBtn.innerHTML = `<img src="icons/sun.png" alt="Light mode" width="28" height="28">`;
       }
     });
+
+    toggleBtn.addEventListener('mouseenter', () => {
+      if (body.classList.contains('light')) {
+        toggleBtn.innerHTML = `<img src="icons/moon-hover.png" alt="Dark mode" width="28" height="28">`;
+      } else {
+        toggleBtn.innerHTML = `<img src="icons/sun-hover.png" alt="Light mode" width="28" height="28">`;
+      }
+    });
+
+    toggleBtn.addEventListener('mouseleave', () => {
+      if (body.classList.contains('light')) {
+        toggleBtn.innerHTML = `<img src="icons/moon.png" alt="Dark mode" width="28" height="28">`;
+      } else {
+        toggleBtn.innerHTML = `<img src="icons/sun.png" alt="Light mode" width="28" height="28">`;
+      }
+    });
   </script>
 </body>
 </html>
