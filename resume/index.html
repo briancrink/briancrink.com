@@ -204,6 +204,11 @@
     </div>
   </div>
 
+    <button class="toggle-btn" id="theme-toggle">
+      <img src="../icons/sun.png" alt="Light mode" width="28" height="28">
+    </button>
+  </div>
+
   <script>
     const toggleBtn = document.getElementById('theme-toggle');
     const body = document.body;
@@ -212,9 +217,25 @@
       body.classList.toggle('light');
       
       if (body.classList.contains('light')) {
-        toggleBtn.innerHTML = `<img src="../icons/moon.png" alt="Dark mode" width="24" height="24">`;
+        toggleBtn.innerHTML = `<img src="../icons/moon.png" alt="Dark mode" width="28" height="28">`;
       } else {
-        toggleBtn.innerHTML = `<img src="../icons/sun.png" alt="Light mode" width="24" height="24">`;
+        toggleBtn.innerHTML = `<img src="../icons/sun.png" alt="Light mode" width="28" height="28">`;
+      }
+    });
+
+    toggleBtn.addEventListener('mouseenter', () => {
+      if (body.classList.contains('light')) {
+        toggleBtn.innerHTML = `<img src="../icons/moon-hover.png" alt="Dark mode" width="28" height="28">`;
+      } else {
+        toggleBtn.innerHTML = `<img src="../icons/sun-hover.png" alt="Light mode" width="28" height="28">`;
+      }
+    });
+
+    toggleBtn.addEventListener('mouseleave', () => {
+      if (body.classList.contains('light')) {
+        toggleBtn.innerHTML = `<img src="../icons/moon.png" alt="Dark mode" width="28" height="28">`;
+      } else {
+        toggleBtn.innerHTML = `<img src="../icons/sun.png" alt="Light mode" width="28" height="28">`;
       }
     });
   </script>
