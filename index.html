@@ -54,7 +54,7 @@
       display: flex;
       flex-direction: column;
       gap: 48px;
-      margin-bottom: 80px;
+      margin-bottom: 20px;
     }
 
     .section h2 {
@@ -126,7 +126,7 @@
       padding: 8px;
       border-radius: 50%;
       transition: transform 0.3s;
-      margin: 60px auto 0;
+      margin: 20px auto 0;
       display: block;
     }
 
@@ -138,27 +138,16 @@
 <body>
   <div class="container">
     <h1>Brian Crink</h1>
-
     <div class="sections">
       <div class="section">
-        <h2>Explore</h2>
         <div class="links">
+          <a href="/social" class="link">Connect</a>
           <a href="/feed" class="link">Newsfeed</a>
           <a href="/dotfiles" class="link">Dotfiles</a>
         </div>
       </div>
-
-      <div class="section">
-        <h2>Connect</h2>
-        <div class="links">
-          <a href="https://x.com/briancrink" class="link" target="_blank">X</a>
-          <a href="https://threads.net/@briancrink" class="link" target="_blank">Threads</a>
-          <a href="https://instagram.com/briancrink" class="link" target="_blank">Instagram</a>
-        </div>
       </div>
-    </div>
-
-    <button class="toggle-btn" id="theme-toggle">
+      <button class="toggle-btn" id="theme-toggle">
       <img src="icons/sun.png" alt="Light mode" width="28" height="28">
     </button>
   </div>
@@ -170,6 +159,22 @@
     toggleBtn.addEventListener('click', () => {
       body.classList.toggle('light');
       
+      if (body.classList.contains('light')) {
+        toggleBtn.innerHTML = `<img src="../icons/moon.png" alt="Dark mode" width="28" height="28">`;
+      } else {
+        toggleBtn.innerHTML = `<img src="../icons/sun.png" alt="Light mode" width="28" height="28">`;
+      }
+    });
+
+    toggleBtn.addEventListener('mouseenter', () => {
+      if (body.classList.contains('light')) {
+        toggleBtn.innerHTML = `<img src="icons/moon-hover.png" alt="Dark mode" width="28" height="28">`;
+      } else {
+        toggleBtn.innerHTML = `<img src="icons/sun-hover.png" alt="Light mode" width="28" height="28">`;
+      }
+    });
+
+    toggleBtn.addEventListener('mouseleave', () => {
       if (body.classList.contains('light')) {
         toggleBtn.innerHTML = `<img src="icons/moon.png" alt="Dark mode" width="28" height="28">`;
       } else {
