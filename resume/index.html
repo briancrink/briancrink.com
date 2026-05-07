@@ -24,6 +24,13 @@
       justify-content: center;
       font-family: 'JetBrains Mono', monospace;
       transition: background 0.4s;
+      opacity: 0;
+      animation: fadeIn 1.3s forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
     }
 
     .terminal {
@@ -128,7 +135,7 @@
     }
 
     body.light .terminal-body {
-      color: #1a1a1a;
+      color: #1ddc00;
     }
 
     body.light h1 {
