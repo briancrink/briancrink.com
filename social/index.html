@@ -32,17 +32,12 @@
       to   { opacity: 1; }
     }
 
-    .container {
-      max-width: 620px;
-      width: 100%;
-      text-align: center;
-    }
+    .container { max-width: 620px; width: 100%; text-align: center; }
 
     h2 {
       font-size: 1.8rem;
       margin: 40px 0 20px;
       font-weight: 600;
-      color: #ffffff;
     }
 
     .icons {
@@ -63,14 +58,8 @@
       transform: scale(1.15);
     }
 
-    body.light {
-      background: #ffffff;
-      color: #1a1a1a;
-    }
-
-    body.light h2 {
-      color: #1a1a1a;
-    }
+    body.light { background: #ffffff; color: #1a1a1a; }
+    body.light h2 { color: #1a1a1a; }
 
     .toggle-btn {
       background: transparent;
@@ -88,43 +77,58 @@
     .toggle-btn:hover {
       transform: rotate(20deg);
     }
+
+    .toggle-btn svg {
+      width: 28px;
+      height: 28px;
+      fill: currentColor;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Follow</h2>
     <div class="icons">
-      <a href="https://x.com/briancrink" class="icon" target="_blank">
+      <a href="https://x.com/briancrink" class="icon" 
+         data-light="../icons/dark/x.png" 
+         data-dark="../icons/light/x.png">
         <img src="../icons/color/x.png" alt="X" width="45" height="45">
       </a>
-      <a href="https://threads.net/@briancrink" class="icon" target="_blank">
+      <a href="https://threads.net/@briancrink" class="icon" 
+         data-light="../icons/dark/threads.png" 
+         data-dark="../icons/light/threads.png">
         <img src="../icons/color/threads.png" alt="Threads" width="45" height="45">
       </a>
-      <a href="https://instagram.com/briancrink" class="icon" target="_blank">
-        <img src="../icons/color/instagram.png" alt="Instagram" width="40" height="40">
+      <a href="https://instagram.com/briancrink" class="icon" 
+         data-light="../icons/dark/instagram.png" 
+         data-dark="../icons/light/instagram.png">
+        <img src="../icons/light/instagram.png" alt="Instagram" width="40" height="40">
       </a>
     </div>
 
     <h2>Connect</h2>
     <div class="icons">
-      <!-- Add more icons here -->
+      <!-- Add more icons with data-light and data-dark -->
     </div>
 
     <h2>Join</h2>
     <div class="icons">
-      <a href="https://access.edu" class="icon" target="_blank">
-        <img src="../icons/color/accessedu.png" alt="AccessEdu" width="45" height="45">
+      <a href="https://access.edu" class="icon" 
+         data-light="../icons/dark/accessedu.png" 
+         data-dark="../icons/light/accessedu.png">
+        <img src="../icons/dark/accessedu.png" alt="AccessEdu" width="45" height="45">
       </a>
-      <a href="https://meetup.com/briancrink" class="icon" target="_blank">
-        <img src="../icons/color/meetup.png" alt="Meetup" width="45" height="45">
-      </a>
-      <a href="https://github.com/briancrink" class="icon" target="_blank">
-        <img src="../icons/color/github.png" alt="Github" width="50" height="50">
-      </a>
+      <!-- Add more... -->
     </div>
 
-    <button class="toggle-btn" id="theme-toggle">
-      <img src="../icons/sun.png" alt="Light mode" width="28" height="28">
+    <button class="toggle-btn" id="theme-toggle"
+            data-light="../icons/moon.png"
+            data-dark="../icons/sun.png">
+      <!-- Default Sun (inline SVG) -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+        <circle cx="12" cy="12" r="5"/>
+        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+      </svg>
     </button>
   </div>
 
@@ -132,32 +136,37 @@
     const toggleBtn = document.getElementById('theme-toggle');
     const body = document.body;
 
+    function updateAllIcons() {
+      const isLight = body.classList.contains('light');
+      const mode = isLight ? 'light' : 'dark';
+
+      document.querySelectorAll('.icon').forEach(icon => {
+        const img = icon.querySelector('img');
+        const newSrc = icon.getAttribute(`data-${mode}`);
+        if (newSrc) img.src = newSrc;
+      });
+
+      const toggleSrc = toggleBtn.getAttribute(`data-${mode}`);
+      toggleBtn.innerHTML = `<img src="${toggleSrc}" alt="${isLight ? 'Dark' : 'Light'} mode" width="28" height="28">`;
+    }
+
     toggleBtn.addEventListener('click', () => {
       body.classList.toggle('light');
-      
-      if (body.classList.contains('light')) {
-        toggleBtn.innerHTML = `<img src="../icons/moon.png" alt="Dark mode" width="28" height="28">`;
-      } else {
-        toggleBtn.innerHTML = `<img src="../icons/sun.png" alt="Light mode" width="28" height="28">`;
-      }
+      updateAllIcons();
     });
 
-    // Hover effect for yellow icons
+    // Hover effect for toggle button
     toggleBtn.addEventListener('mouseenter', () => {
-      if (body.classList.contains('light')) {
-        toggleBtn.innerHTML = `<img src="../icons/moon-hover.png" alt="Dark mode" width="28" height="28">`;
-      } else {
-        toggleBtn.innerHTML = `<img src="../icons/sun-hover.png" alt="Light mode" width="28" height="28">`;
-      }
+      const isLight = body.classList.contains('light');
+      const hoverSrc = isLight ? '../icons/moon-hover.png' : '../icons/sun-hover.png';
+      toggleBtn.innerHTML = `<img src="${hoverSrc}" alt="${isLight ? 'Dark' : 'Light'} mode" width="28" height="28">`;
     });
 
     toggleBtn.addEventListener('mouseleave', () => {
-      if (body.classList.contains('light')) {
-        toggleBtn.innerHTML = `<img src="../icons/moon.png" alt="Dark mode" width="28" height="28">`;
-      } else {
-        toggleBtn.innerHTML = `<img src="../icons/sun.png" alt="Light mode" width="28" height="28">`;
-      }
+      updateAllIcons();
     });
+
+    updateAllIcons();
   </script>
 </body>
 </html>
