@@ -45,6 +45,17 @@
       margin-bottom: 70px;
       border: 1px solid rgb(25, 25, 25);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.272);
+      cursor: pointer !important;
+      transition: background 0.2s ease;
+      user-select: none;
+    }
+
+    .hire-pill:hover {
+      background: #1a1a1a;
+    }
+
+    body.light .hire-pill:hover {
+      background: #eeeeee;
     }
 
     .hire-dot-container {
@@ -253,7 +264,7 @@
 </head>
 <body>
 
-<div class="hire-pill">
+<div class="hire-pill" onclick="window.location.href='../hire/index.html'">
     <div class="hire-dot-container">
       <div class="hire-dot"></div>
       <div class="pulse-ring"></div>
