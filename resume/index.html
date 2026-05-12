@@ -13,9 +13,21 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
 
+    @media (max-width: 768px) {
+      .terminal {
+        width: calc(100% - 32px);
+        max-width: none;
+        top: 20px;
+      }
+      
+      .terminal-body {
+        padding: 25px 30px;
+      }
+    }
+
     body {
       margin: 0;
-      padding: 60px 20px;
+      padding: 50px 16px 160px;
       min-height: 100vh;
       overflow-y: hidden;
       height: 100vh;
