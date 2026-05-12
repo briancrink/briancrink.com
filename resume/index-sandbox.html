@@ -17,11 +17,13 @@
       margin: 0;
       padding: 60px 20px;
       min-height: 100vh;
+      overflow-y: hidden;
+      height: 100vh;
       background: #000000;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;    /* flex-start or center */
+      justify-content: flex-start;
       font-family: 'JetBrains Mono', monospace;
       transition: background 0.4s;
       opacity: 0;
@@ -31,6 +33,50 @@
     @keyframes fadeIn {
       from { opacity: 0; }
       to   { opacity: 1; }
+    }
+
+      .terminal {
+      width: 100%;
+      max-width: 820px;
+      background: #161616;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      border: 1px solid #333;
+      position: fixed;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      height: 75vh;
+      max-height: 75vh;
+    }
+
+    .terminal-header {
+      background: #1d1d1d;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: sticky;
+      top: 0;
+      z-index: 60;
+    }
+
+    .terminal-body {
+      padding: 30px 40px;
+      line-height: 1.7;
+      color: #1ddc00;
+      font-size: 1.05rem;
+      position: relative;
+      height: calc(100% - 58px);
+      overflow: hidden;
+    }
+
+    .sections-wrapper {
+      max-height: calc(85vh - 58px - 120px);
+      overflow-y: auto;
+      scrollbar-width: thin;
     }
 
     .hire-pill {
@@ -117,27 +163,6 @@
       animation: pulseBeacon 1.35s infinite ease-out;
     }
 
-    .terminal {
-      width: 100%;
-      max-width: 820px;
-      min-height: 560px;
-      background: #161616;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-      border: 1px solid #333;
-      position: relative;
-    }
-
-    .terminal-header {
-      background: #1d1d1d;
-      padding: 10px 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      position: relative;
-    }
-
     .traffic-lights { display: flex; gap: 8px; }
     .light { 
       width: 12px; 
@@ -196,13 +221,6 @@
       transform: translateY(-50%) rotate(20deg);
     }
 
-    .terminal-body {
-      padding: 30px 40px;
-      line-height: 1.7;
-      color: #1ddc00;
-      font-size: 1.05rem;
-    }
-
     h1 { 
       color: #ffffff; 
       margin: 0 0 20px 0; 
@@ -223,8 +241,6 @@
     body.light .terminal {
       background: #f8f8f8;
       border-color: #ccc;
-      min-height: 560px;
-      margin: 0px auto;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
       width: 100%;
       max-width: 820px;
@@ -247,7 +263,6 @@
       color: #444;
     }
 
-    /* Neutralize flex collapsing */
     body.light, body.light * {
       float: none;
       flex: none;
@@ -292,19 +307,50 @@
       <h1>Brian Crink</h1>
       <p>Software Engineer</p>
 
-      <div class="section">
-        <h2>Experience</h2>
-        <p><strong>Software Engineer</strong> Company Name</p>
-      </div>
+      <div class="sections-wrapper">
+        <div class="section">
+          <h2>Experience</h2>
+          <p><strong>Software Engineer</strong> Company Name</p>
+        </div>
 
-      <div class="section">
-        <h2>Projects</h2>
-        <p>Projects</p>
-      </div>
+        <div class="section">
+          <h2>Projects</h2>
+          <p>Projects</p>
+        </div>
 
-      <div class="section">
-        <h2>Contact</h2>
-        <p>Contact</p>
+        <div class="section">
+          <h2>Skills</h2>
+          <p>Skills</p>
+        </div>
+        <div class="section">
+          <h2>Certification</h2>
+          <p>Certification</p>
+        </div>
+
+        <div class="section">
+          <h2>Academic Experience</h2>
+          <p>Academic Experience</p>
+        </div>
+
+        <div class="section">
+          <h2>Projects</h2>
+          <p>Projects</p>
+        </div>
+
+        <div class="section">
+          <h2>Skills</h2>
+          <p>Skills</p>
+        </div>
+
+        <div class="section">
+          <h2>Certification</h2>
+          <p>Certification</p>
+        </div>
+
+        <div class="section">
+          <h2>Academic Experience</h2>
+          <p>Academic Experience</p>
+        </div>
       </div>
     </div>
   </div>
@@ -322,7 +368,6 @@
     const downloadBtn = document.getElementById('download-btn');
     const body = document.body;
 
-    // Theme toggle
     toggleBtn.addEventListener('click', () => {
       body.classList.toggle('light');
       
@@ -335,7 +380,6 @@
       }
     });
 
-    // Hover for toggle button
     toggleBtn.addEventListener('mouseenter', () => {
       if (body.classList.contains('light')) {
         toggleBtn.innerHTML = `<img src="../icons/moon-hover.png" alt="Dark mode" width="24" height="24">`;
@@ -352,7 +396,6 @@
       }
     });
 
-    // Hover for download button
     downloadBtn.addEventListener('mouseenter', () => {
       downloadBtn.innerHTML = `<img src="../icons/color/download.png" alt="Download Resume" width="20" height="20">`;
     });
