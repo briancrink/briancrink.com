@@ -39,7 +39,7 @@
       margin-top: 100px;             /* Content height */
     }
 
-    h1 {
+    .name {
       font-size: 2.7rem;
       font-weight: 600;
       margin-bottom: 12px;
@@ -128,11 +128,21 @@
     .toggle-btn:hover {
       transform: rotate(20deg);
     }
+
+    .name-link {
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    
+    .name-link:hover {
+      opacity: 0.85;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Brian Crink</h1>
+    <h1 class="name"><a href="https://briancrink.com" class="name-link">Brian Crink</a></h1>
     <div class="sections">
       <div class="section">
         <div class="links">
