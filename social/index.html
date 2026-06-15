@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <link rel="icon" href="../icons/favicon.png" type="image/png" media="(prefers-color-scheme: light)">
-  <link rel="icon" href="../icons/favicon-white.png" type="image/png" media="(prefers-color-scheme: dark)">
-  <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
-  <link rel="apple-touch-icon" href="../icons/apple-touch-icon-dark.png" media="(prefers-color-scheme: dark)">
-  <title>Brian Crink</title>
+  <link rel="icon" href="../shared/images/icons/favicon.png" type="image/png" media="(prefers-color-scheme: light)">
+  <link rel="icon" href="../shared/images/icons/favicon-white.png" type="image/png" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" href="../shared/images/icons/apple-touch-icon.png">
+  <link rel="apple-touch-icon" href="../shared/images/icons/apple-touch-icon-dark.png" media="(prefers-color-scheme: dark)">
+  <title>Social - briancrink.com</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
@@ -95,19 +95,19 @@
     <h2>Follow</h2>
     <div class="icons">
       <a href="https://x.com/briancrink" class="icon" 
-         data-light="../icons/dark/x.png" 
-         data-dark="../icons/light/x.png">
-        <img src="../icons/color/x.png" alt="X" width="45" height="45">
+         data-light="../shared/images/icons/dark/x.png" 
+         data-dark="../shared/images/icons/light/x.png">
+        <img src="../shared/images/icons/color/x.png" alt="X" width="45" height="45">
       </a>
       <a href="https://threads.net/@briancrink" class="icon" 
-         data-light="../icons/dark/threads.png" 
-         data-dark="../icons/light/threads.png">
-        <img src="../icons/color/threads.png" alt="Threads" width="45" height="45">
+         data-light="../shared/images/icons/dark/threads.png" 
+         data-dark="../shared/images/icons/light/threads.png">
+        <img src="../shared/images/icons/color/threads.png" alt="Threads" width="45" height="45">
       </a>
       <a href="https://instagram.com/briancrink" class="icon" 
-         data-light="../icons/dark/instagram.png" 
-         data-dark="../icons/light/instagram.png">
-        <img src="../icons/light/instagram.png" alt="Instagram" width="40" height="40">
+         data-light="../shared/images/icons/dark/instagram.png" 
+         data-dark="../shared/images/icons/light/instagram.png">
+        <img src="../shared/images/icons/light/instagram.png" alt="Instagram" width="40" height="40">
       </a>
     </div>
 
@@ -119,16 +119,16 @@
     <h2>Join</h2>
     <div class="icons">
       <a href="https://access.edu" class="icon" 
-         data-light="../icons/dark/accessedu.png" 
-         data-dark="../icons/light/accessedu.png">
-        <img src="../icons/dark/accessedu.png" alt="AccessEdu" width="45" height="45">
+         data-light="../shared/images/icons/dark/accessedu.png" 
+         data-dark="../shared/images/icons/light/accessedu.png">
+        <img src="../shared/images/icons/dark/accessedu.png" alt="AccessEdu" width="45" height="45">
       </a>
       <!-- Add more... -->
     </div>
 
     <button class="toggle-btn" id="theme-toggle"
-            data-light="../icons/moon.png"
-            data-dark="../icons/sun.png">
+            data-light="../shared/images/icons/moon.png"
+            data-dark="../shared/images/icons/sun.png">
       <!-- Default Sun (inline SVG) -->
       <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
         <circle cx="12" cy="12" r="5"/>
@@ -163,7 +163,7 @@
     // Hover effect for toggle button
     toggleBtn.addEventListener('mouseenter', () => {
       const isLight = body.classList.contains('light');
-      const hoverSrc = isLight ? '../icons/moon-hover.png' : '../icons/sun-hover.png';
+      const hoverSrc = isLight ? '../shared/images/icons/moon-hover.png' : '../shared/images/icons/sun-hover.png';
       toggleBtn.innerHTML = `<img src="${hoverSrc}" alt="${isLight ? 'Dark' : 'Light'} mode" width="28" height="28">`;
     });
 

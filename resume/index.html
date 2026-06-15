@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <link rel="icon" href="../icons/favicon.png" type="image/png" media="(prefers-color-scheme: light)">
-  <link rel="icon" href="../icons/favicon-white.png" type="image/png" media="(prefers-color-scheme: dark)">
-  <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
-  <link rel="apple-touch-icon" href="../icons/apple-touch-icon-dark.png" media="(prefers-color-scheme: dark)">
-  <title>Resume</title>
+  <link rel="icon" href="../shared/images/icons/favicon.png" type="image/png" media="(prefers-color-scheme: light)">
+  <link rel="icon" href="../shared/images/icons/favicon-white.png" type="image/png" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" href="../shared/images/icons/apple-touch-icon.png">
+  <link rel="apple-touch-icon" href="../shared/images/icons/apple-touch-icon-dark.png" media="(prefers-color-scheme: dark)">
+  <title>Resume - briancrink.com</title>
 </head>
 <body>
   <style>
@@ -311,11 +311,11 @@
       <div class="terminal-title">~/resume</div>
 
       <button class="download-btn" id="download-btn" onclick="window.open('/resume.doc', '_blank')">
-        <img src="../icons/light/download.png" alt="Download Resume" width="20" height="20">
+        <img src="../shared/images/icons/light/download.png" alt="Download Resume" width="20" height="20">
       </button>
 
       <button class="toggle-btn" id="theme-toggle">
-        <img src="../icons/sun.png" alt="Light mode" width="24" height="24">
+        <img src="../shared/images/icons/sun.png" alt="Light mode" width="24" height="24">
       </button>
     </div>
 
@@ -388,39 +388,39 @@
       body.classList.toggle('light');
       
       if (body.classList.contains('light')) {
-        toggleBtn.innerHTML = `<img src="../icons/moon.png" alt="Dark mode" width="24" height="24">`;
-        downloadBtn.innerHTML = `<img src="../icons/dark/download.png" alt="Download Resume" width="20" height="20">`;
+        toggleBtn.innerHTML = `<img src="../shared/images/icons/moon.png" alt="Dark mode" width="24" height="24">`;
+        downloadBtn.innerHTML = `<img src="../shared/images/icons/dark/download.png" alt="Download Resume" width="20" height="20">`;
       } else {
-        toggleBtn.innerHTML = `<img src="../icons/sun.png" alt="Light mode" width="24" height="24">`;
-        downloadBtn.innerHTML = `<img src="../icons/light/download.png" alt="Download Resume" width="20" height="20">`;
+        toggleBtn.innerHTML = `<img src="../shared/images/icons/sun.png" alt="Light mode" width="24" height="24">`;
+        downloadBtn.innerHTML = `<img src="../shared/images/icons/light/download.png" alt="Download Resume" width="20" height="20">`;
       }
     });
 
     toggleBtn.addEventListener('mouseenter', () => {
       if (body.classList.contains('light')) {
-        toggleBtn.innerHTML = `<img src="../icons/moon-hover.png" alt="Dark mode" width="24" height="24">`;
+        toggleBtn.innerHTML = `<img src="../shared/images/icons/moon-hover.png" alt="Dark mode" width="24" height="24">`;
       } else {
-        toggleBtn.innerHTML = `<img src="../icons/sun-hover.png" alt="Light mode" width="24" height="24">`;
+        toggleBtn.innerHTML = `<img src="../shared/images/icons/sun-hover.png" alt="Light mode" width="24" height="24">`;
       }
     });
 
     toggleBtn.addEventListener('mouseleave', () => {
       if (body.classList.contains('light')) {
-        toggleBtn.innerHTML = `<img src="../icons/moon.png" alt="Dark mode" width="24" height="24">`;
+        toggleBtn.innerHTML = `<img src="../shared/images/icons/moon.png" alt="Dark mode" width="24" height="24">`;
       } else {
-        toggleBtn.innerHTML = `<img src="../icons/sun.png" alt="Light mode" width="24" height="24">`;
+        toggleBtn.innerHTML = `<img src="../shared/images/icons/sun.png" alt="Light mode" width="24" height="24">`;
       }
     });
 
     downloadBtn.addEventListener('mouseenter', () => {
-      downloadBtn.innerHTML = `<img src="../icons/color/download.png" alt="Download Resume" width="20" height="20">`;
+      downloadBtn.innerHTML = `<img src="../shared/images/icons/color/download.png" alt="Download Resume" width="20" height="20">`;
     });
 
     downloadBtn.addEventListener('mouseleave', () => {
       if (body.classList.contains('light')) {
-        downloadBtn.innerHTML = `<img src="../icons/dark/download.png" alt="Download Resume" width="20" height="20">`;
+        downloadBtn.innerHTML = `<img src="../shared/images/icons/dark/download.png" alt="Download Resume" width="20" height="20">`;
       } else {
-        downloadBtn.innerHTML = `<img src="../icons/light/download.png" alt="Download Resume" width="20" height="20">`;
+        downloadBtn.innerHTML = `<img src="../shared/images/icons/light/download.png" alt="Download Resume" width="20" height="20">`;
       }
     });
   </script>

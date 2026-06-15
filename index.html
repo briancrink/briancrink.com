@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <link rel="icon" href="icons/favicon.png" type="image/png" media="(prefers-color-scheme: light)">
-  <link rel="icon" href="icons/favicon-white.png" type="image/png" media="(prefers-color-scheme: dark)">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon-dark.png" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="shared/images/icons/favicon.png" type="image/png" media="(prefers-color-scheme: light)">
+  <link rel="icon" href="shared/images/icons/favicon-white.png" type="image/png" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" href="shared/images/icons/apple-touch-icon.png">
+  <link rel="apple-touch-icon" href="shared/images/icons/apple-touch-icon-dark.png" media="(prefers-color-scheme: dark)">
   <title>Brian Crink</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
@@ -155,7 +155,7 @@
     </div>
 
     <button class="toggle-btn" id="theme-toggle">
-      <img src="icons/sun.png" alt="Light mode" width="28" height="28">
+      <img src="shared/images/icons/sun.png" alt="Light mode" width="28" height="28">
     </button>
   </div>
 
@@ -167,25 +167,25 @@
       body.classList.toggle('light');
       
       if (body.classList.contains('light')) {
-        toggleBtn.innerHTML = `<img src="icons/moon.png" alt="Dark mode" width="28" height="28">`;
+        toggleBtn.innerHTML = `<img src="shared/images/icons/moon.png" alt="Dark mode" width="28" height="28">`;
       } else {
-        toggleBtn.innerHTML = `<img src="icons/sun.png" alt="Light mode" width="28" height="28">`;
+        toggleBtn.innerHTML = `<img src="shared/images/icons/sun.png" alt="Light mode" width="28" height="28">`;
       }
     });
 
     toggleBtn.addEventListener('mouseenter', () => {
       if (body.classList.contains('light')) {
-        toggleBtn.innerHTML = `<img src="icons/moon-hover.png" alt="Dark mode" width="28" height="28">`;
+        toggleBtn.innerHTML = `<img src="shared/images/icons/moon-hover.png" alt="Dark mode" width="28" height="28">`;
       } else {
-        toggleBtn.innerHTML = `<img src="icons/sun-hover.png" alt="Light mode" width="28" height="28">`;
+        toggleBtn.innerHTML = `<img src="shared/images/icons/sun-hover.png" alt="Light mode" width="28" height="28">`;
       }
     });
 
     toggleBtn.addEventListener('mouseleave', () => {
       if (body.classList.contains('light')) {
-        toggleBtn.innerHTML = `<img src="icons/moon.png" alt="Dark mode" width="28" height="28">`;
+        toggleBtn.innerHTML = `<img src="shared/images/icons/moon.png" alt="Dark mode" width="28" height="28">`;
       } else {
-        toggleBtn.innerHTML = `<img src="icons/sun.png" alt="Light mode" width="28" height="28">`;
+        toggleBtn.innerHTML = `<img src="shared/images/icons/sun.png" alt="Light mode" width="28" height="28">`;
       }
     });
   </script>
