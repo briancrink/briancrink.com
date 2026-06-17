@@ -21,14 +21,17 @@
         justify-content: center;
     }
 
+    .container {
+      text-align: center;
+      margin-top: -60px
+    }
+
     .name {
       font-size: 3.0rem;
       font-weight: 600;
       color: #ffffff;
-      margin: 0 0 24px 0;
+      margin: 0 0 15px 0;
       letter-spacing: -0.5px;
-      text-align: center;
-      margin-top: -60px;
     }
 
     .name-link {
@@ -41,7 +44,20 @@
     .name-link:hover {
       opacity: 0.85;
     }
+
+    .status {
+      color: #666666;
+      font-size: 1rem;
+      margin: 0;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
   </style>
-  <h1 class="name"><a href="https://briancrink.com" class="name-link">Brian Crink</a></h1>
+
+  <div class="container">
+    <p class="status">404</p>
+    <h1 class="name"><a href="https://briancrink.com" class="name-link">Brian Crink</a></h1>
+  </div>
+
 </body>
 </html>
