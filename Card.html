@@ -12,189 +12,149 @@
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html, body {
-      min-height: 100dvh;
-    }
-
     body {
+      background: #000;
       color: #fff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100dvh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
-      padding: 0 16px 28px;
-      overflow: hidden;
-      background: #020617;
-      /* background: #000000; */
-      transition: background 0.55s ease;
-    }
-
-    /* Ambient “bias lighting” per portal (darker / quieter than the card) */
-    /* body.portal-life {
-      background:
-        radial-gradient(ellipse 90% 70% at 50% 40%, rgba(14, 165, 233, 0.16), transparent 60%),
-        #020617;
-    } */
-    body.portal-life {
-      background:
-        radial-gradient(ellipse 90% 120% at 50% 50%, rgba(14, 164, 233, 0.811), transparent 70%),
-        #020617;
-    }
-    /* body.portal-build {
-      background:
-        radial-gradient(ellipse 90% 70% at 50% 50%, rgba(22, 163, 74, 0.14), transparent 60%),
-        #03140a;
-    } */
-    body.portal-build {
-      background:
-        radial-gradient(ellipse 90% 120% at 50% 50%, rgba(22, 163, 74, 0.811), transparent 70%),
-        #03140a;
-    }
-    /* body.portal-work {
-      background:
-        radial-gradient(ellipse 90% 70% at 50% 50%, rgba(148, 163, 184, 0.08), transparent 60%),
-        #000000;
-    } */
-    body.portal-work {
-      background:
-        radial-gradient(ellipse 90% 120% at 50% 50%, rgba(17, 17, 17, 0.811), transparent 70%),
-        #000000;
-    }
-    /* body.portal-commerce {
-      background:
-        radial-gradient(circle 1300px at 50% 50%,rgba(255, 89, 0, 0.928), transparent 70%),
-      #1b0a00;
-    } */
-    body.portal-commerce {
-      background:
-        radial-gradient(ellipse 90% 120% at 50% 50%, rgba(255, 89, 0, 0.811), transparent 70%),
-        #321200;
+      padding: 0 16px 40px;
     }
 
     .header {
-      padding: 40px 20px 18px;
+      padding: 48px 20px 28px;
       text-align: center;
-      position: relative;
-      z-index: 2;
     }
 
     h1 {
-      font-size: 2rem;
+      font-size: 2.4rem;
       font-weight: 600;
       letter-spacing: -0.5px;
     }
 
-    .portal-stage {
+    .deck {
       width: 100%;
-      max-width: 420px;
-      flex: 1;
+      max-width: 1100px;
+      transition: max-width 0.55s cubic-bezier(0.22, 1.4, 0.36, 1);
+    }
+
+    .track {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      align-items: stretch;
+      transition:
+        transform 0.55s cubic-bezier(0.22, 1.4, 0.36, 1),
+        gap 0.55s cubic-bezier(0.22, 1.4, 0.36, 1);
+    }
+
+    .card {
+      min-width: 0;
+      display: flex;
+      transition:
+        transform 0.45s cubic-bezier(0.22, 1.2, 0.36, 1),
+        opacity 0.45s ease,
+        filter 0.35s ease;
+    }
+
+    @media (min-width: 769px) {
+      .card.is-focused {
+        transform: translateY(-10px);
+      }
+    }
+
+    .card-inner {
+      width: 100%;
+      border-radius: 20px;
+      padding: 24px 18px 20px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: #fff;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      z-index: 1;
-      touch-action: pan-y;
-    }
-
-    .portal {
-      width: 100%;
-      border-radius: 24px;
       position: relative;
       overflow: hidden;
-      min-height: 520px;
-      border: 2px solid rgba(255, 255, 255, 0.14);
-      box-shadow: none;
-      transition: border-color 0.45s ease, filter 0.45s ease;
+      transition:
+        border-radius 0.55s cubic-bezier(0.22, 1.4, 0.36, 1),
+        padding 0.55s cubic-bezier(0.22, 1.4, 0.36, 1),
+        transform 0.35s ease,
+        box-shadow 0.35s ease,
+        border-color 0.35s ease,
+        background 0.35s ease;
     }
 
-    .portal.life-active {
-      border-color: transparent;
-      filter: drop-shadow(0 0 4px rgba(14, 165, 233, 0.3))
-              drop-shadow(0 0 8px rgba(14, 165, 233, 0.14));
+    /* LIFE focus: mostly blue border, tiny yellow/green ends, subtle rounded glow */
+    .card.life.is-focused {
+      filter:
+        drop-shadow(0 0 4px rgba(14, 165, 233, 0.35))
+        drop-shadow(0 0 8px rgba(14, 165, 233, 0.18));
+    }
+
+    .card.life.is-focused .card-inner {
+      border: 2px solid transparent;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.45);
       background:
-        linear-gradient(transparent, transparent) padding-box,
+        radial-gradient(ellipse 130% 90% at 55% -15%, rgba(250, 204, 21, 0.28), transparent 58%) padding-box,
+        linear-gradient(180deg, #38bdf8 0%, #0ea5e9 45%, #0284c7 100%) padding-box,
         linear-gradient(
           to bottom,
           #fde047 0%,
           #facc15 3%,
-          #68d2ff 7%,
-          #38bdf8 18%,
-          #38bdf8 40%,
-          #38bdf8 60%,
-          #38bdf8 82%,
+          #38bdf8 7%,
+          #0ea5e9 18%,
+          #0284c7 40%,
+          #0369a1 60%,
+          #075985 82%,
           #4ade80 94%,
           #22c55e 97%,
           #16a34a 100%
         ) border-box;
-      background-clip: padding-box, border-box;
+      background-clip: padding-box, padding-box, border-box;
       background-origin: border-box;
     }
 
-    .portal.build-active {
-      border-color: rgba(134, 239, 172, 0.45);
-      filter: drop-shadow(0 0 4px rgba(34, 197, 94, 0.28))
-              drop-shadow(0 0 8px rgba(34, 197, 94, 0.12));
+    .card.build.is-focused .card-inner {
+      border-color: rgba(134, 239, 172, 0.95);
+      box-shadow:
+        0 0 0 1px rgba(134, 239, 172, 0.55),
+        0 0 24px rgba(34, 197, 94, 0.55),
+        0 12px 40px rgba(0,0,0,0.45);
     }
 
-    .portal.work-active {
-      border-color: rgba(255, 255, 255, 0.12);
-      filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.12))
-              drop-shadow(0 0 8px rgba(255, 255, 255, 0.06));
+    .card.work.is-focused .card-inner {
+      border-color: rgba(255, 255, 255, 0.55);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.25),
+        0 0 24px rgba(255, 255, 255, 0.18),
+        0 12px 40px rgba(0,0,0,0.45);
     }
 
-    .portal.commerce-active {
-      border-color: rgba(253, 186, 116, 0.5);
-      filter: drop-shadow(0 0 4px rgba(249, 115, 22, 0.28))
-              drop-shadow(0 0 8px rgba(249, 115, 22, 0.12));
+    .card.commerce.is-focused .card-inner {
+      border-color: rgba(253, 186, 116, 0.95);
+      box-shadow:
+        0 0 0 1px rgba(253, 186, 116, 0.55),
+        0 0 24px rgba(249, 115, 22, 0.55),
+        0 12px 40px rgba(0,0,0,0.45);
     }
 
-    .world {
-      position: absolute;
-      inset: 0;
-      padding: 28px 22px 24px;
-      display: flex;
-      flex-direction: column;
-      opacity: 0;
-      pointer-events: none;
-      transform: translateX(18px);
-      transition:
-        opacity 0.45s ease,
-        transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
-      overflow: hidden;
-      border-radius: 0px;
+    .deck.jelly .card-inner {
+      animation: jellyPulse 0.7s cubic-bezier(0.22, 1.4, 0.36, 1);
     }
 
-    .world.active {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translateX(0);
-      z-index: 2;
+    @keyframes jellyPulse {
+      0%   { transform: scale(0.96); }
+      40%  { transform: scale(1.03); }
+      70%  { transform: scale(0.99); }
+      100% { transform: scale(1); }
     }
 
-    .world.exit-left {
-      opacity: 0;
-      transform: translateX(-18px);
-    }
-
-    .world.exit-right {
-      opacity: 0;
-      transform: translateX(18px);
-    }
-
-    /* LIFE */
-    .world.life {
+    .card.life .card-inner {
       background:
-        radial-gradient(ellipse 130% 90% at 55% -15%, rgba(250, 204, 21, 0.28), transparent 58%),
-        linear-gradient(180deg, #38bdf8 0%, #0ea5e9 45%, #0284c7 100%);
-    }
-
-    .world.life.active {
-      border: none;
-      background:
-        radial-gradient(ellipse 130% 90% at 55% -15%, rgba(250, 204, 21, 0.28), transparent 58%),
-        linear-gradient(180deg, #38bdf8 0%, #0ea5e9 45%, #0284c7 100%);
+        radial-gradient(ellipse 120% 80% at 50% -10%, rgba(250, 204, 21, 0.2), transparent 55%),
+        linear-gradient(180deg, #0ea5e9 0%, #0284c7 48%, #0369a1 100%);
+      border-color: rgba(255,255,255,0.18);
     }
 
     .life-sun {
@@ -211,7 +171,8 @@
         radial-gradient(circle at 35% 35%, #fff7ae 0%, #fde047 35%, #f59e0b 72%, #d97706 100%);
       box-shadow:
         0 0 18px rgba(250, 204, 21, 0.75),
-        0 0 36px rgba(245, 158, 11, 0.45);
+        0 0 36px rgba(245, 158, 11, 0.45),
+        0 0 60px rgba(234, 179, 8, 0.25);
       will-change: transform, opacity;
       transform: translate(-30px, 78%) scale(0.7);
     }
@@ -245,8 +206,15 @@
       transform: scaleY(0) rotate(var(--tilt, 0deg)) skewX(var(--skew, 0deg));
       opacity: 0;
       will-change: transform, opacity;
-      background: linear-gradient(to top, var(--c1) 0%, var(--c2) 42%, var(--c3) 78%, var(--c4, var(--c3)) 100%);
+      background: linear-gradient(
+        to top,
+        var(--c1) 0%,
+        var(--c2) 42%,
+        var(--c3) 78%,
+        var(--c4, var(--c3)) 100%
+      );
       filter: saturate(1.08) contrast(1.05);
+      box-shadow: 1px 0 0 rgba(0,0,0,0.08);
     }
 
     .blade.b1  { left: 1%;  --h:28px; --w:5px; --tilt:-10deg; --skew:4deg;  --c1:#14532d; --c2:#166534; --c3:#15803d; --c4:#4ade80; }
@@ -302,30 +270,43 @@
 
     .life-ground {
       position: absolute;
-      left: 0; right: 0; bottom: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       height: 18px;
       z-index: 0;
       pointer-events: none;
-      background: linear-gradient(to top, rgba(20, 83, 45, 0.55), rgba(22, 101, 52, 0.2) 55%, transparent);
+      background:
+        linear-gradient(to top, rgba(20, 83, 45, 0.55), rgba(22, 101, 52, 0.2) 55%, transparent);
       opacity: 0;
       transition: opacity 0.45s ease;
     }
 
-    .world.life.active .life-ground { opacity: 1; }
-    .world.life.active .blade { animation: bladeSway 3.6s ease-in-out infinite; }
+    .card.life.is-focused .life-ground { opacity: 1; }
+
+    .card.life.is-focused .blade {
+      animation: bladeSway 3.6s ease-in-out infinite;
+    }
+
+    .card.life.is-focused .blade.b1, .card.life.is-focused .blade.f1 { animation-delay: 0.0s; }
+    .card.life.is-focused .blade.b2, .card.life.is-focused .blade.f2 { animation-delay: 0.12s; }
+    .card.life.is-focused .blade.b3, .card.life.is-focused .blade.f3 { animation-delay: 0.24s; }
+    .card.life.is-focused .blade.b4, .card.life.is-focused .blade.f4 { animation-delay: 0.08s; }
+    .card.life.is-focused .blade.b5, .card.life.is-focused .blade.f5 { animation-delay: 0.3s; }
+    .card.life.is-focused .blade.b6, .card.life.is-focused .blade.f6 { animation-delay: 0.16s; }
 
     @keyframes bladeSway {
       0%, 100% { translate: 0 0; }
       50% { translate: 1.5px 0; }
     }
 
-    /* BUILD */
-    .world.build {
+    .card.build .card-inner {
       background-color: #15803d;
       background-image:
         linear-gradient(to right, rgba(187, 247, 208, 0.28) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(187, 247, 208, 0.28) 1px, transparent 1px);
       background-size: 24px 24px;
+      border-color: rgba(255,255,255,0.18);
     }
 
     .build-icons {
@@ -353,16 +334,17 @@
     .build-icon.i7 { top: 22%; left: 42%; }
     .build-icon.i8 { bottom: 28%; left: 44%; }
 
-    /* WORK */
-    .world.work {
-      background-color: #000;
+    .card.work .card-inner {
+      background-color: #000000;
       background-image:
         linear-gradient(to right,  rgba(16, 16, 16, 0.6) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(16, 16, 16, 0.6) 1px, transparent 1px);
-      background-size: 24px 24px;
+      background-size: 24px 24px, 24px 24px;
+      background-position: 0 0, 0 0;
+      border-color: rgba(255,255,255,0.10);
     }
 
-    .world.work::before {
+    .card.work .card-inner::before {
       content: "";
       position: absolute;
       inset: 0;
@@ -372,10 +354,13 @@
       pointer-events: none;
       z-index: 0;
       opacity: 0.45;
+      will-change: opacity;
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
       animation: none;
     }
 
-    .world.work.active::before {
+    .card.work.is-focused .card-inner::before {
       animation: dotPulse 6s ease-in-out infinite;
       opacity: 0.75;
     }
@@ -385,46 +370,51 @@
       50%      { opacity: 0.95; }
     }
 
-    /* COMMERCE */
-    .world.commerce {
+    .card.commerce .card-inner {
       background: #ea580c;
+      border-color: rgba(255,255,255,0.18);
+    }
+
+    .card.life .category,
+    .card.life .subtitle,
+    .card.build .category,
+    .card.build .subtitle,
+    .card.commerce .category,
+    .card.commerce .subtitle {
+      color: rgba(255,255,255,0.85);
     }
 
     .category {
       font-size: 0.72rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.8);
+      color: #8b949e;
       margin-bottom: 8px;
       position: relative;
       z-index: 1;
     }
 
-    .world h2 {
-      font-size: 1.8rem;
+    .card h2 {
+      font-size: 1.5rem;
       font-weight: 600;
       margin-bottom: 6px;
+      transition: font-size 0.45s ease;
       position: relative;
       z-index: 1;
     }
 
     .subtitle {
-      font-size: 0.95rem;
-      color: rgba(255,255,255,0.8);
-      margin-bottom: 22px;
+      font-size: 0.88rem;
+      color: #8b949e;
+      margin-bottom: 18px;
       position: relative;
       z-index: 1;
-    }
-
-    .world.work .category,
-    .world.work .subtitle {
-      color: #8b949e;
     }
 
     .links {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       position: relative;
       z-index: 1;
     }
@@ -433,16 +423,16 @@
       display: block;
       text-decoration: none;
       color: #fff;
-      font-size: 1.05rem;
+      font-size: 0.98rem;
       font-weight: 500;
-      padding: 14px 16px;
-      border-radius: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
       background: rgba(255,255,255,0.10);
       border: 1px solid rgba(255,255,255,0.14);
       transition: background 0.15s ease, border-color 0.15s ease;
     }
 
-    .world.work .links a {
+    .card.work .links a {
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.08);
     }
@@ -452,172 +442,214 @@
       border-color: rgba(255,255,255,0.28);
     }
 
-    .nav-dots {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-      padding: 22px 0 8px;
-      position: relative;
-      z-index: 2;
+    .nav-dots, .hint {
+      display: none;
+      transition: opacity 0.35s ease;
     }
 
-    .nav-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.2);
-      transition: background 0.25s ease, transform 0.25s ease;
-    }
+    @media (max-width: 768px) {
+      body {
+        overflow: hidden;
+        padding-bottom: 0;
+      }
 
-    .nav-dot.active {
-      background: #00ff9d;
-      transform: scale(1.15);
-    }
+      .deck {
+        flex: 1;
+        max-width: 440px;
+        position: relative;
+        overflow: hidden;
+        touch-action: pan-y;
+      }
 
-    /* .hint {
-      text-align: center;
-      font-size: 0.75rem;
-      color: rgba(255,255,255,0.28);
-      padding-bottom: 8px;
-      position: relative;
-      z-index: 2;
-    } */
+      .track {
+        display: flex;
+        gap: 0;
+        height: 100%;
+      }
 
-    @media (min-width: 769px) {
-      .portal-stage { max-width: 440px; }
-      .portal { min-height: 560px; }
+      .card {
+        min-width: 100%;
+        padding: 12px 8px 40px;
+        flex-direction: column;
+        align-items: center;
+        transform: none !important;
+      }
+
+      .card-inner {
+        padding: 28px 22px 24px;
+        border-radius: 24px;
+      }
+
+      .card h2 { font-size: 1.8rem; }
+      .subtitle { font-size: 0.95rem; margin-bottom: 22px; }
+      .links { gap: 10px; }
+      .links a { font-size: 1.05rem; padding: 14px 16px; border-radius: 14px; }
+
+      .nav-dots {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        padding: 18px 0 36px;
+      }
+
+      .nav-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.2);
+        transition: background 0.2s ease, transform 0.2s ease;
+      }
+
+      .nav-dot.active {
+        background: #00ff9d;
+        transform: scale(1.15);
+      }
+
+      .hint {
+        display: block;
+        position: absolute;
+        bottom: 78px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 0.75rem;
+        color: rgba(255,255,255,0.28);
+        pointer-events: none;
+      }
     }
   </style>
 </head>
-<body class="portal-life">
+<body>
   <div class="header">
     <h1>Brian Crink</h1>
   </div>
 
-  <div class="portal-stage" id="stage">
-    <div class="portal life-active" id="portal">
+  <div class="deck" id="deck">
+    <div class="track" id="track">
 
-      <!-- LIFE -->
-      <section class="world life active" data-portal="life" data-index="0">
-        <div class="life-sun" id="lifeSun" aria-hidden="true"></div>
-        <div class="life-grass" aria-hidden="true">
-          <span class="blade b1"></span><span class="blade b2"></span><span class="blade b3"></span>
-          <span class="blade b4"></span><span class="blade b5"></span><span class="blade b6"></span>
-          <span class="blade b7"></span><span class="blade b8"></span><span class="blade b9"></span>
-          <span class="blade b10"></span><span class="blade b11"></span><span class="blade b12"></span>
-          <span class="blade b13"></span><span class="blade b14"></span><span class="blade b15"></span>
-          <span class="blade b16"></span><span class="blade b17"></span><span class="blade b18"></span>
-          <span class="blade b19"></span><span class="blade b20"></span><span class="blade b21"></span>
-          <span class="blade b22"></span><span class="blade b23"></span><span class="blade b24"></span>
-          <span class="blade b25"></span>
-          <span class="blade f1"></span><span class="blade f2"></span><span class="blade f3"></span>
-          <span class="blade f4"></span><span class="blade f5"></span><span class="blade f6"></span>
-          <span class="blade f7"></span><span class="blade f8"></span><span class="blade f9"></span>
-          <span class="blade f10"></span><span class="blade f11"></span><span class="blade f12"></span>
-          <span class="blade f13"></span><span class="blade f14"></span><span class="blade f15"></span>
-          <span class="blade f16"></span><span class="blade f17"></span><span class="blade f18"></span>
-          <span class="blade f19"></span><span class="blade f20"></span><span class="blade f21"></span>
-          <span class="blade f22"></span><span class="blade f23"></span><span class="blade f24"></span>
-        </div>
-        <div class="life-ground"></div>
+      <section class="card life is-focused" data-index="0">
+        <div class="card-inner" id="lifeInner">
+          <div class="life-sun" id="lifeSun" aria-hidden="true"></div>
+          <div class="life-grass" id="lifeGrass" aria-hidden="true">
+            <span class="blade b1"></span><span class="blade b2"></span><span class="blade b3"></span>
+            <span class="blade b4"></span><span class="blade b5"></span><span class="blade b6"></span>
+            <span class="blade b7"></span><span class="blade b8"></span><span class="blade b9"></span>
+            <span class="blade b10"></span><span class="blade b11"></span><span class="blade b12"></span>
+            <span class="blade b13"></span><span class="blade b14"></span><span class="blade b15"></span>
+            <span class="blade b16"></span><span class="blade b17"></span><span class="blade b18"></span>
+            <span class="blade b19"></span><span class="blade b20"></span><span class="blade b21"></span>
+            <span class="blade b22"></span><span class="blade b23"></span><span class="blade b24"></span>
+            <span class="blade b25"></span>
+            <span class="blade f1"></span><span class="blade f2"></span><span class="blade f3"></span>
+            <span class="blade f4"></span><span class="blade f5"></span><span class="blade f6"></span>
+            <span class="blade f7"></span><span class="blade f8"></span><span class="blade f9"></span>
+            <span class="blade f10"></span><span class="blade f11"></span><span class="blade f12"></span>
+            <span class="blade f13"></span><span class="blade f14"></span><span class="blade f15"></span>
+            <span class="blade f16"></span><span class="blade f17"></span><span class="blade f18"></span>
+            <span class="blade f19"></span><span class="blade f20"></span><span class="blade f21"></span>
+            <span class="blade f22"></span><span class="blade f23"></span><span class="blade f24"></span>
+          </div>
+          <div class="life-ground"></div>
 
-        <div class="category">01</div>
-        <h2>Life</h2>
-        <div class="subtitle">Home, space, social, feed</div>
-        <div class="links">
-          <a href="https://home.briancrink.com">Home</a>
-          <a href="https://space.briancrink.com">Space</a>
-          <a href="https://social.briancrink.com">Social</a>
-          <a href="https://feed.briancrink.com">Feed</a>
-        </div>
-      </section>
-
-      <!-- BUILD -->
-      <section class="world build" data-portal="build" data-index="1" id="buildWorld">
-        <div class="build-icons" aria-hidden="true">
-          <span class="build-icon i1">🏠</span>
-          <span class="build-icon i2">💡</span>
-          <span class="build-icon i3">🧱</span>
-          <span class="build-icon i4">📦</span>
-          <span class="build-icon i5">📋</span>
-          <span class="build-icon i6">🚲</span>
-          <span class="build-icon i7">📱</span>
-          <span class="build-icon i8">⬜</span>
-        </div>
-
-        <div class="category">02</div>
-        <h2>Build</h2>
-        <div class="subtitle">Dev, systems, tools</div>
-        <div class="links">
-          <a href="https://dev.briancrink.com">Dev</a>
-          <a href="https://tech.briancrink.com">Tech</a>
-          <a href="https://api.briancrink.com">API</a>
-          <a href="https://app.briancrink.com">App</a>
-          <a href="https://apps.briancrink.com">Apps</a>
-          <a href="https://os.briancrink.com">OS</a>
+          <div class="category">01</div>
+          <h2>Life</h2>
+          <div class="subtitle">Home, space, social, feed</div>
+          <div class="links">
+            <a href="https://home.briancrink.com">Home</a>
+            <a href="https://space.briancrink.com">Space</a>
+            <a href="https://social.briancrink.com">Social</a>
+            <a href="https://feed.briancrink.com">Feed</a>
+          </div>
         </div>
       </section>
 
-      <!-- WORK -->
-      <section class="world work" data-portal="work" data-index="2">
-        <div class="category">03</div>
-        <h2>Work</h2>
-        <div class="subtitle">Career, jobs, business</div>
-        <div class="links">
-          <a href="https://career.briancrink.com">Career</a>
-          <a href="https://jobs.briancrink.com">Jobs</a>
-          <a href="https://business.briancrink.com">Business</a>
+      <section class="card build" data-index="1">
+        <div class="card-inner" id="buildInner">
+          <div class="build-icons" aria-hidden="true">
+            <span class="build-icon i1">🏠</span>
+            <span class="build-icon i2">💡</span>
+            <span class="build-icon i3">🧱</span>
+            <span class="build-icon i4">📦</span>
+            <span class="build-icon i5">📋</span>
+            <span class="build-icon i6">🚲</span>
+            <span class="build-icon i7">📱</span>
+            <span class="build-icon i8">⬜</span>
+          </div>
+
+          <div class="category">02</div>
+          <h2>Build</h2>
+          <div class="subtitle">Dev, systems, tools</div>
+          <div class="links">
+            <a href="https://dev.briancrink.com">Dev</a>
+            <a href="https://tech.briancrink.com">Tech</a>
+            <a href="https://api.briancrink.com">API</a>
+            <a href="https://app.briancrink.com">App</a>
+            <a href="https://apps.briancrink.com">Apps</a>
+            <a href="https://os.briancrink.com">OS</a>
+          </div>
         </div>
       </section>
 
-      <!-- COMMERCE -->
-      <section class="world commerce" data-portal="commerce" data-index="3">
-        <div class="category">04</div>
-        <h2>Commerce</h2>
-        <div class="subtitle">Shop & store</div>
-        <div class="links">
-          <a href="https://shop.briancrink.com">Shop</a>
-          <a href="https://store.briancrink.com">Store</a>
+      <section class="card work" data-index="2">
+        <div class="card-inner">
+          <div class="category">03</div>
+          <h2>Work</h2>
+          <div class="subtitle">Career, jobs, business</div>
+          <div class="links">
+            <a href="https://career.briancrink.com">Career</a>
+            <a href="https://jobs.briancrink.com">Jobs</a>
+            <a href="https://business.briancrink.com">Business</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card commerce" data-index="3">
+        <div class="card-inner">
+          <div class="category">04</div>
+          <h2>Commerce</h2>
+          <div class="subtitle">Shop & store</div>
+          <div class="links">
+            <a href="https://shop.briancrink.com">Shop</a>
+            <a href="https://store.briancrink.com">Store</a>
+          </div>
         </div>
       </section>
 
     </div>
+    <div class="hint">swipe left / right</div>
   </div>
 
   <div class="nav-dots" id="dots">
-    <div class="nav-dot active" data-index="0"></div>
-    <div class="nav-dot" data-index="1"></div>
-    <div class="nav-dot" data-index="2"></div>
-    <div class="nav-dot" data-index="3"></div>
+    <div class="nav-dot active"></div>
+    <div class="nav-dot"></div>
+    <div class="nav-dot"></div>
+    <div class="nav-dot"></div>
   </div>
-  <!-- <div class="hint">swipe left / right</div> -->
 
   <script>
-    const body = document.body;
-    const portal = document.getElementById('portal');
-    const stage = document.getElementById('stage');
-    const worlds = [...document.querySelectorAll('.world')];
+    const track = document.getElementById('track');
+    const deck = document.getElementById('deck');
+    const cards = [...document.querySelectorAll('.card')];
     const dots = [...document.querySelectorAll('.nav-dot')];
+    const buildCard = document.querySelector('.card.build');
+    const lifeCard = document.querySelector('.card.life');
+    const buildInner = document.getElementById('buildInner');
+    const lifeInner = document.getElementById('lifeInner');
     const lifeSun = document.getElementById('lifeSun');
-    const lifeWorld = document.querySelector('.world.life');
-    const buildWorld = document.getElementById('buildWorld');
     const blades = [...document.querySelectorAll('.blade')];
     const buildIcons = [...document.querySelectorAll('.build-icon')];
-
-    const PORTALS = ['life', 'build', 'work', 'commerce'];
-    const LIFE_MOVE_MS = 1100;
-    const GRASS_MS = 900;
-    const SUN_REST_T = 0.62;
-    const EDGE_MARGIN = 36;
-    const MOVE_MS = 640;
-    const FADE_MS = 200;
+    const total = cards.length;
 
     let index = 0;
     let startX = 0;
     let deltaX = 0;
     let dragging = false;
+    let wasMobile = window.matchMedia('(max-width: 768px)').matches;
     let sunAnim = null;
-    let transitioning = false;
+
+    const LIFE_MOVE_MS = 1100;
+    const GRASS_MS = 900;
+    const SUN_REST_T = 0.62;
 
     function sunPoint(t, w, h) {
       const x = -30 + t * (w + 60);
@@ -627,8 +659,8 @@
     }
 
     function setSun(t, opacity) {
-      const w = lifeWorld.clientWidth;
-      const h = lifeWorld.clientHeight;
+      const w = lifeInner.clientWidth;
+      const h = lifeInner.clientHeight;
       const p = sunPoint(t, w, h);
       lifeSun.style.opacity = String(opacity);
       lifeSun.style.transform = `translate(${p.x}px, ${p.y}px) scale(${p.scale})`;
@@ -693,6 +725,17 @@
       await animateSun(SUN_REST_T, 1.05, 1, 0, LIFE_MOVE_MS * 0.9);
     }
 
+    function syncLife(focusedIndex) {
+      const lifeIndex = Number(lifeCard.dataset.index);
+      if (focusedIndex === lifeIndex) lifeEnter();
+      else if (lifeCard.classList.contains('was-focused') || Number(lifeSun.style.opacity || 0) > 0.05) lifeExit();
+      else { setSun(0, 0); retractGrass(); }
+    }
+
+    const EDGE_MARGIN = 36;
+    const MOVE_MS = 640;
+    const FADE_MS = 200;
+
     function getExitOffset(icon, container) {
       const c = container.getBoundingClientRect();
       const r = icon.getBoundingClientRect();
@@ -725,9 +768,11 @@
         icon.style.transition = 'none';
         setIconTransform(icon, 0, 0, 1, 0);
       });
-      void buildWorld.offsetWidth;
+      void buildInner.offsetWidth;
+      buildIcons.forEach((icon) => setIconTransform(icon, 0, 0, 1, 0));
+      void buildInner.offsetWidth;
       buildIcons.forEach((icon) => {
-        const { dx, dy } = getExitOffset(icon, buildWorld);
+        const { dx, dy } = getExitOffset(icon, buildInner);
         icon.dataset.exitX = dx;
         icon.dataset.exitY = dy;
         setIconTransform(icon, dx, dy, 0.85, 0);
@@ -737,9 +782,9 @@
     function animateIconsIn() {
       buildIcons.forEach((icon, i) => {
         const delay = i * 55;
+        icon.style.transition = 'none';
         const x = Number(icon.dataset.exitX || 0);
         const y = Number(icon.dataset.exitY || 0);
-        icon.style.transition = 'none';
         setIconTransform(icon, x, y, 0.85, 0);
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
@@ -757,9 +802,9 @@
         icon.style.transition = 'none';
         setIconTransform(icon, 0, 0, 1, 0.9);
       });
-      void buildWorld.offsetWidth;
+      void buildInner.offsetWidth;
       buildIcons.forEach((icon) => {
-        const { dx, dy } = getExitOffset(icon, buildWorld);
+        const { dx, dy } = getExitOffset(icon, buildInner);
         icon.dataset.exitX = dx;
         icon.dataset.exitY = dy;
       });
@@ -775,97 +820,96 @@
       });
     }
 
-    function setAmbient(name) {
-      body.classList.remove('portal-life', 'portal-build', 'portal-work', 'portal-commerce');
-      body.classList.add(`portal-${name}`);
-      portal.classList.remove('life-active', 'build-active', 'work-active', 'commerce-active');
-      portal.classList.add(`${name}-active`);
-    }
-
-    function activateWorldEffects(name) {
-      if (name === 'life') lifeEnter();
-      else {
-        if (Number(lifeSun.style.opacity || 0) > 0.05) lifeExit();
-        else { setSun(0, 0); retractGrass(); }
-      }
-
-      if (name === 'build') {
+    function syncBuildIcons(focusedIndex) {
+      const buildIndex = Number(buildCard.dataset.index);
+      if (focusedIndex === buildIndex) {
         if (!buildIcons[0].dataset.exitX) prepareIconsOffCard();
         animateIconsIn();
       } else {
         const anyVisible = buildIcons.some((icon) => Number(icon.style.opacity || 0) > 0.05);
-        if (anyVisible) animateIconsOut();
+        if (anyVisible || buildCard.classList.contains('was-focused')) animateIconsOut();
         else prepareIconsOffCard();
       }
     }
 
-    function setPortal(nextIndex, direction = 1) {
-      if (transitioning) return;
-      nextIndex = (nextIndex + PORTALS.length) % PORTALS.length;
-      if (nextIndex === index) return;
-
-      transitioning = true;
-      const prev = worlds[index];
-      const next = worlds[nextIndex];
-      const name = PORTALS[nextIndex];
-
-      prev.classList.remove('active');
-      prev.classList.add(direction > 0 ? 'exit-left' : 'exit-right');
-
-      next.classList.remove('exit-left', 'exit-right');
-      next.style.transform = direction > 0 ? 'translateX(18px)' : 'translateX(-18px)';
-      void next.offsetWidth;
-      next.classList.add('active');
-      next.style.transform = '';
-
-      setAmbient(name);
-      activateWorldEffects(name);
-
-      dots.forEach((d, i) => d.classList.toggle('active', i === nextIndex));
-      index = nextIndex;
-
-      setTimeout(() => {
-        prev.classList.remove('exit-left', 'exit-right');
-        transitioning = false;
-      }, 480);
+    function isMobile() {
+      return window.matchMedia('(max-width: 768px)').matches;
     }
 
-    /* Swipe */
-    stage.addEventListener('touchstart', (e) => {
-      dragging = true;
-      startX = e.touches[0].clientX;
-      deltaX = 0;
-    }, { passive: true });
+    function setFocus(i) {
+      const prev = index;
+      index = Math.max(0, Math.min(total - 1, i));
+      cards.forEach((card, n) => {
+        if (n === prev) card.classList.add('was-focused');
+        card.classList.toggle('is-focused', n === index);
+      });
+      dots.forEach((d, n) => d.classList.toggle('active', n === index));
+      if (isMobile()) track.style.transform = `translateX(-${index * 100}%)`;
+      else track.style.transform = 'none';
+      syncLife(index);
+      syncBuildIcons(index);
+      setTimeout(() => {
+        cards.forEach((card) => card.classList.remove('was-focused'));
+      }, Math.max(MOVE_MS, LIFE_MOVE_MS) + 200);
+    }
 
-    stage.addEventListener('touchmove', (e) => {
-      if (!dragging) return;
-      deltaX = e.touches[0].clientX - startX;
-    }, { passive: true });
+    function triggerJelly() {
+      deck.classList.remove('jelly');
+      void deck.offsetWidth;
+      deck.classList.add('jelly');
+      setTimeout(() => deck.classList.remove('jelly'), 700);
+    }
 
-    stage.addEventListener('touchend', () => {
-      if (!dragging) return;
-      dragging = false;
-      if (Math.abs(deltaX) > 50) {
-        setPortal(index + (deltaX < 0 ? 1 : -1), deltaX < 0 ? 1 : -1);
+    function onBreakpointChange() {
+      const mobile = isMobile();
+      if (mobile !== wasMobile) {
+        triggerJelly();
+        wasMobile = mobile;
       }
-    });
+      prepareIconsOffCard();
+      setFocus(index);
+    }
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') { e.preventDefault(); setPortal(index + 1, 1); }
-      if (e.key === 'ArrowLeft')  { e.preventDefault(); setPortal(index - 1, -1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); setFocus(index + 1); }
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); setFocus(index - 1); }
     });
 
-    dots.forEach((dot) => {
-      dot.addEventListener('click', () => {
-        const i = Number(dot.dataset.index);
-        setPortal(i, i > index ? 1 : -1);
+    cards.forEach((card, n) => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('a')) return;
+        setFocus(n);
       });
     });
 
+    deck.addEventListener('touchstart', (e) => {
+      if (!isMobile()) return;
+      dragging = true;
+      startX = e.touches[0].clientX;
+      deltaX = 0;
+      track.style.transition = 'none';
+    }, { passive: true });
+
+    deck.addEventListener('touchmove', (e) => {
+      if (!dragging || !isMobile()) return;
+      deltaX = e.touches[0].clientX - startX;
+      const percent = (deltaX / deck.offsetWidth) * 100;
+      track.style.transform = `translateX(calc(-${index * 100}% + ${percent}%))`;
+    }, { passive: true });
+
+    deck.addEventListener('touchend', () => {
+      if (!isMobile()) return;
+      dragging = false;
+      track.style.transition = 'transform 0.55s cubic-bezier(0.22, 1.4, 0.36, 1)';
+      if (Math.abs(deltaX) > 50) setFocus(index + (deltaX < 0 ? 1 : -1));
+      else setFocus(index);
+    });
+
+    window.addEventListener('resize', onBreakpointChange);
+
     prepareIconsOffCard();
     setSun(0, 0);
-    setAmbient('life');
-    lifeEnter();
+    setFocus(0);
   </script>
 </body>
 </html>
