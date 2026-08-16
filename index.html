@@ -12,8 +12,15 @@
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html {
+      height: 100%;
+      background: #020617; /* fallback if anything shows through */
+    }
+
     html, body {
+      min-height: 100%;
       min-height: 100dvh;
+      min-height: -webkit-fill-available; /* iOS Safari */
     }
 
     body {
@@ -25,8 +32,17 @@
       justify-content: flex-start;
       padding: 0 16px 28px;
       overflow: hidden;
-      background: #020617;
+      background: transparent; /* ambient layer paints the page */
+      /* background: #020617; */
       /* background: #000000; */
+      transition: background 0.55s ease;
+    }
+
+    .ambient {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
       transition: background 0.55s ease;
     }
 
@@ -70,6 +86,37 @@
       background:
         radial-gradient(ellipse 90% 120% at 50% 50%, rgba(255, 89, 0, 0.811), transparent 70%),
         #321200;
+    }
+
+  /* Phone: cover tall viewport, softer top/bottom bands */
+@media (max-width: 768px) {
+  body.portal-life .ambient {
+    background:
+      radial-gradient(ellipse 160% 180% at 50% 42%, rgba(14, 164, 233, 0.5), transparent 90%),
+      #0a2740;
+  }
+  body.portal-build .ambient {
+    background:
+      radial-gradient(ellipse 160% 180% at 50% 42%, rgba(22, 163, 74, 0.5), transparent 90%),
+      #0a2e14;
+  }
+  body.portal-work .ambient {
+    background:
+      radial-gradient(ellipse 160% 180% at 50% 42%, rgba(40, 40, 40, 0.65), transparent 90%),
+      #0a0a0a;
+  }
+  body.portal-commerce .ambient {
+    background:
+      radial-gradient(ellipse 160% 180% at 50% 42%, rgba(255, 89, 0, 0.5), transparent 90%),
+      #3d1a00;
+  }
+}
+
+    .header,
+    .portal-stage,
+    .nav-dots {
+      position: relative;
+      z-index: 1;
     }
 
     .header {
@@ -490,6 +537,7 @@
   </style>
 </head>
 <body class="portal-life">
+  <div class="ambient" aria-hidden="true"></div>
   <div class="header">
     <h1>Brian Crink</h1>
   </div>
