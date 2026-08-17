@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"> 
   <link rel="icon" href="shared/images/icons/favicon.png" type="image/png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="shared/images/icons/favicon-white.png" type="image/png" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" href="shared/images/icons/apple-touch-icon.png">
@@ -15,7 +15,13 @@
     html {
       height: 100%;
       background: #020617; /* fallback if anything shows through */
+      transition: background 0.55s ease;
     }
+
+    html:has(body.portal-life)     { background: #020617; }
+    html:has(body.portal-build)    { background: #03140a; }
+    html:has(body.portal-work)     { background: #000000; }
+    html:has(body.portal-commerce) { background: #321200; }
 
     html, body {
       min-height: 100%;
@@ -38,12 +44,16 @@
       transition: background 0.55s ease;
     }
 
-    .ambient {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      transition: background 0.55s ease;
+  .ambient {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 100dvh;
+    min-height: -webkit-fill-available;
+    z-index: 0;
+    pointer-events: none;
+    transition: background 0.55s ease;
     }
 
     /* Ambient “bias lighting” per portal (darker / quieter than the card) */
@@ -88,48 +98,45 @@
         #321200;
     }
 
-  /* Phone: cover tall viewport, softer top/bottom bands */
+  /* Phone: cover tall viewport*/
 @media (max-width: 768px) {
   body.portal-life .ambient {
     background:
       radial-gradient(
         ellipse 120% 140% at 50% 40%,
         rgba(14, 164, 233, 0.85) 0%,
-        rgba(14, 164, 233, 0.35) 45%,
-        transparent 75%
+        rgba(14, 164, 233, 0.3) 50%,
+        #020617 100%
       ),
       #020617;
   }
-
   body.portal-build .ambient {
     background:
       radial-gradient(
         ellipse 120% 140% at 50% 40%,
         rgba(22, 163, 74, 0.85) 0%,
-        rgba(22, 163, 74, 0.35) 45%,
-        transparent 75%
+        rgba(22, 163, 74, 0.3) 50%,
+        #03140a 100%
       ),
       #03140a;
   }
-
   body.portal-work .ambient {
     background:
       radial-gradient(
         ellipse 120% 140% at 50% 40%,
         rgba(60, 60, 60, 0.9) 0%,
-        rgba(30, 30, 30, 0.5) 45%,
-        transparent 75%
+        rgba(25, 25, 25, 0.5) 50%,
+        #000000 100%
       ),
       #000000;
   }
-
   body.portal-commerce .ambient {
     background:
       radial-gradient(
         ellipse 120% 140% at 50% 40%,
         rgba(255, 89, 0, 0.85) 0%,
-        rgba(255, 89, 0, 0.35) 45%,
-        transparent 75%
+        rgba(255, 89, 0, 0.3) 50%,
+        #321200 100%
       ),
       #321200;
   }
