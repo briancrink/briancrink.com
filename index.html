@@ -12,9 +12,167 @@
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* ===== Portal bloom (add-only) ===== */
+    @property --portal-spin {
+      syntax: '<angle>';
+      inherits: false;
+      initial-value: 0deg;
+    }
+
+    @keyframes portalSpin {
+      to { --portal-spin: 360deg; }
+    }
+
+    @keyframes portalBloomBreathe {
+      0%, 100% { filter: blur(14px); opacity: 0.55; }
+      50%      { filter: blur(22px); opacity: 0.85; }
+    }
+
+    @keyframes portalBloomBreatheSoft {
+      0%, 100% { filter: blur(22px); opacity: 0.28; }
+      50%      { filter: blur(32px); opacity: 0.48; }
+    }
+
+    .portal-shell {
+      position: relative;
+      width: 100%;
+      --portal-radius: 24px;
+      --portal-border: 2px;
+      --rim-outset: 3px;
+      --bloom-outset: 2px;
+      --bloom-soft-outset: 5px;
+    }
+
+    .portal-bloom,
+    .portal-bloom-soft,
+    .portal-rim {
+      position: absolute;
+      pointer-events: none;
+    }
+
+    .portal-bloom {
+      inset: calc(-1 * var(--bloom-outset));
+      border-radius: calc(var(--portal-radius) + var(--bloom-outset));
+      z-index: 0;
+      background: conic-gradient(
+        from var(--portal-spin),
+        var(--bloom-a),
+        var(--bloom-b),
+        var(--bloom-c),
+        var(--bloom-a)
+      );
+      animation:
+        portalSpin 7s linear infinite,
+        portalBloomBreathe 4.5s ease-in-out infinite;
+    }
+
+    .portal-bloom-soft {
+      inset: calc(-1 * var(--bloom-soft-outset));
+      border-radius: calc(var(--portal-radius) + var(--bloom-soft-outset));
+      z-index: 0;
+      background: conic-gradient(
+        from var(--portal-spin),
+        var(--bloom-a),
+        var(--bloom-b),
+        var(--bloom-c),
+        var(--bloom-a)
+      );
+      animation:
+        portalSpin 11s linear infinite,
+        portalBloomBreatheSoft 4.5s ease-in-out infinite;
+    }
+
+    .portal-rim {
+      inset: calc(-1 * var(--rim-outset));
+      border-radius: calc(var(--portal-radius) + var(--rim-outset));
+      z-index: 1;
+      background: conic-gradient(
+        from var(--portal-spin),
+        var(--rim-hot) 0%,
+        var(--bloom-a) 20%,
+        var(--bloom-b) 40%,
+        var(--bloom-c) 60%,
+        var(--bloom-a) 80%,
+        var(--rim-hot) 100%
+      );
+      animation: portalSpin 5.5s linear infinite;
+      padding: var(--rim-outset);
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0.95;
+      box-shadow:
+        0 0 8px 1px color-mix(in srgb, var(--bloom-a) 80%, transparent),
+        0 0 18px 2px color-mix(in srgb, var(--bloom-b) 45%, transparent);
+      transition: box-shadow 0.35s ease;
+    }
+
+    .portal-shell.life-active {
+      --bloom-a: #38bdf8;
+      --bloom-b: #7dd3fc;
+      --bloom-c: #e0f2fe;
+      --rim-hot: #f0f9ff;
+    }
+    .portal-shell.build-active {
+      --bloom-a: #22c55e;
+      --bloom-b: #4ade80;
+      --bloom-c: #bbf7d0;
+      --rim-hot: #f0fdf4;
+    }
+    .portal-shell.work-active {
+      --bloom-a: #94a3b8;
+      --bloom-b: #e2e8f0;
+      --bloom-c: #64748b;
+      --rim-hot: #f8fafc;
+    }
+    .portal-shell.commerce-active {
+      --bloom-a: #f97316;
+      --bloom-b: #fb923c;
+      --bloom-c: #fdba74;
+      --rim-hot: #fff7ed;
+    }
+
+    /* Chromatic — interaction state (Portal 5 / 6 energy) */
+    .portal-shell.chroma .portal-bloom {
+      background: conic-gradient(
+        from var(--portal-spin),
+        #ff006e, #8338ec, #3a86ff, #06d6a0, #ffbe0b, #ff006e
+      );
+    }
+    .portal-shell.chroma .portal-bloom-soft {
+      background: conic-gradient(
+        from var(--portal-spin),
+        #ff4d6d, #c77dff, #4cc9f0, #80ed99, #ffd60a, #ff4d6d
+      );
+    }
+    .portal-shell.chroma .portal-rim {
+      background: conic-gradient(
+        from var(--portal-spin),
+        #fff, #ff006e, #8338ec, #3a86ff, #06d6a0, #ffbe0b, #fff
+      );
+      box-shadow:
+        0 0 10px 1px rgba(255, 255, 255, 0.7),
+        0 0 22px 3px rgba(131, 56, 236, 0.55);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .portal-bloom,
+      .portal-bloom-soft,
+      .portal-rim {
+        animation: none;
+      }
+      .portal-bloom { filter: blur(16px); opacity: 0.65; }
+      .portal-bloom-soft { filter: blur(26px); opacity: 0.35; }
+    }
+
     html {
       height: 100%;
-      background: #020617; /* fallback if anything shows through */
+      background: #020617;
       transition: background 0.55s ease;
     }
 
@@ -26,7 +184,7 @@
     html, body {
       min-height: 100%;
       min-height: 100dvh;
-      min-height: -webkit-fill-available; /* iOS Safari */
+      min-height: -webkit-fill-available;
     }
 
     body {
@@ -38,109 +196,85 @@
       justify-content: flex-start;
       padding: 0 16px 28px;
       overflow: hidden;
-      background: transparent; /* ambient layer paints the page */
-      /* background: #020617; */
-      /* background: #000000; */
+      background: transparent;
       transition: background 0.55s ease;
     }
 
-  .ambient {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    min-height: 100dvh;
-    min-height: -webkit-fill-available;
-    z-index: 0;
-    pointer-events: none;
-    transition: background 0.55s ease;
+    .ambient {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      min-height: 100dvh;
+      min-height: -webkit-fill-available;
+      z-index: 0;
+      pointer-events: none;
+      transition: background 0.55s ease;
     }
 
-    /* Ambient “bias lighting” per portal (darker / quieter than the card) */
-    /* body.portal-life {
-      background:
-        radial-gradient(ellipse 90% 70% at 50% 40%, rgba(14, 165, 233, 0.16), transparent 60%),
-        #020617;
-    } */
     body.portal-life .ambient {
       background:
         radial-gradient(ellipse 90% 120% at 50% 50%, rgba(14, 164, 233, 0.811), transparent 70%),
         #020617;
     }
-    /* body.portal-build {
-      background:
-        radial-gradient(ellipse 90% 70% at 50% 50%, rgba(22, 163, 74, 0.14), transparent 60%),
-        #03140a;
-    } */
     body.portal-build .ambient {
       background:
         radial-gradient(ellipse 90% 120% at 50% 50%, rgba(22, 163, 74, 0.811), transparent 70%),
         #03140a;
     }
-    /* body.portal-work {
-      background:
-        radial-gradient(ellipse 90% 70% at 50% 50%, rgba(148, 163, 184, 0.08), transparent 60%),
-        #000000;
-    } */
-    body.portal-work .ambient{
+    body.portal-work .ambient {
       background:
         radial-gradient(ellipse 90% 120% at 50% 50%, rgba(17, 17, 17, 0.811), transparent 70%),
         #000000;
     }
-    /* body.portal-commerce {
-      background:
-        radial-gradient(circle 1300px at 50% 50%,rgba(255, 89, 0, 0.928), transparent 70%),
-      #1b0a00;
-    } */
-    body.portal-commerce .ambient{
+    body.portal-commerce .ambient {
       background:
         radial-gradient(ellipse 90% 120% at 50% 50%, rgba(255, 89, 0, 0.811), transparent 70%),
         #321200;
     }
 
-  /* Phone: cover tall viewport*/
-@media (max-width: 768px) {
-  body.portal-life .ambient {
-    background:
-      radial-gradient(
-        ellipse 120% 140% at 50% 40%,
-        rgba(14, 164, 233, 0.85) 0%,
-        rgba(14, 164, 233, 0.3) 50%,
-        #020617 100%
-      ),
-      #020617;
-  }
-  body.portal-build .ambient {
-    background:
-      radial-gradient(
-        ellipse 120% 140% at 50% 40%,
-        rgba(22, 163, 74, 0.85) 0%,
-        rgba(22, 163, 74, 0.3) 50%,
-        #03140a 100%
-      ),
-      #03140a;
-  }
-  body.portal-work .ambient {
-    background:
-      radial-gradient(
-        ellipse 120% 140% at 50% 40%,
-        rgba(60, 60, 60, 0.9) 0%,
-        rgba(25, 25, 25, 0.5) 50%,
-        #000000 100%
-      ),
-      #000000;
-  }
-  body.portal-commerce .ambient {
-    background:
-      radial-gradient(
-        ellipse 120% 140% at 50% 40%,
-        rgba(255, 89, 0, 0.85) 0%,
-        rgba(255, 89, 0, 0.3) 50%,
-        #321200 100%
-      ),
-      #321200;
-  }
-}
+    @media (max-width: 768px) {
+      body.portal-life .ambient {
+        background:
+          radial-gradient(
+            ellipse 120% 140% at 50% 40%,
+            rgba(14, 164, 233, 0.85) 0%,
+            rgba(14, 164, 233, 0.3) 50%,
+            #020617 100%
+          ),
+          #020617;
+      }
+      body.portal-build .ambient {
+        background:
+          radial-gradient(
+            ellipse 120% 140% at 50% 40%,
+            rgba(22, 163, 74, 0.85) 0%,
+            rgba(22, 163, 74, 0.3) 50%,
+            #03140a 100%
+          ),
+          #03140a;
+      }
+      body.portal-work .ambient {
+        background:
+          radial-gradient(
+            ellipse 120% 140% at 50% 40%,
+            rgba(60, 60, 60, 0.9) 0%,
+            rgba(25, 25, 25, 0.5) 50%,
+            #000000 100%
+          ),
+          #000000;
+      }
+      body.portal-commerce .ambient {
+        background:
+          radial-gradient(
+            ellipse 120% 140% at 50% 40%,
+            rgba(255, 89, 0, 0.85) 0%,
+            rgba(255, 89, 0, 0.3) 50%,
+            #321200 100%
+          ),
+          #321200;
+      }
+    }
 
     .header,
     .portal-stage,
@@ -177,11 +311,12 @@
 
     .portal {
       width: 100%;
-      border-radius: 24px;
+      border-radius: var(--portal-radius);
       position: relative;
+      z-index: 2;
       overflow: hidden;
       min-height: 520px;
-      border: 2px solid rgba(255, 255, 255, 0.14);
+      border: var(--portal-border) solid rgba(255, 255, 255, 0.14);
       box-shadow: none;
       transition: border-color 0.45s ease, filter 0.45s ease;
     }
@@ -260,7 +395,6 @@
       transform: translateX(18px);
     }
 
-    /* LIFE */
     .world.life {
       background:
         radial-gradient(ellipse 130% 90% at 55% -15%, rgba(250, 204, 21, 0.28), transparent 58%),
@@ -396,7 +530,6 @@
       50% { translate: 1.5px 0; }
     }
 
-    /* BUILD */
     .world.build {
       background-color: #15803d;
       background-image:
@@ -430,7 +563,6 @@
     .build-icon.i7 { top: 22%; left: 42%; }
     .build-icon.i8 { bottom: 28%; left: 44%; }
 
-    /* WORK */
     .world.work {
       background-color: #000;
       background-image:
@@ -462,7 +594,6 @@
       50%      { opacity: 0.95; }
     }
 
-    /* COMMERCE */
     .world.commerce {
       background: #ea580c;
     }
@@ -529,6 +660,30 @@
       border-color: rgba(255,255,255,0.28);
     }
 
+    .links a.is-selected {
+      background: rgba(255, 255, 255, 0.22);
+      border-color: rgba(255, 255, 255, 0.4);
+      outline: none;
+    }
+
+    .world.work .links a.is-selected {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.28);
+    }
+
+    body.portal-life .links a.is-selected {
+      background: rgba(149, 221, 255, 0.442);
+      border-color: rgba(125, 211, 252, 0.55);
+    }
+    body.portal-build .links a.is-selected {
+      background: rgba(0, 255, 157, 0.18);
+      border-color: rgba(0, 255, 157, 0.45);
+    }
+    body.portal-commerce .links a.is-selected {
+      background: rgba(255, 185, 127, 0.379);
+      border-color: rgba(251, 146, 60, 0.5);
+    }
+
     .nav-dots {
       display: flex;
       gap: 8px;
@@ -542,23 +697,26 @@
       width: 7px;
       height: 7px;
       border-radius: 50%;
-      background: rgba(255,255,255,0.2);
+      background: rgba(255, 255, 255, 0.2);
       transition: background 0.25s ease, transform 0.25s ease;
     }
 
     .nav-dot.active {
-      background: #00ff9d;
       transform: scale(1.15);
     }
 
-    /* .hint {
-      text-align: center;
-      font-size: 0.75rem;
-      color: rgba(255,255,255,0.28);
-      padding-bottom: 8px;
-      position: relative;
-      z-index: 2;
-    } */
+    body.portal-life .nav-dot.active {
+      background: #7dd3fc;
+    }
+    body.portal-build .nav-dot.active {
+      background: #00ff9d;
+    }
+    body.portal-work .nav-dot.active {
+      background: #ffffff;
+    }
+    body.portal-commerce .nav-dot.active {
+      background: #fb923c;
+    }
 
     @media (min-width: 769px) {
       .portal-stage { max-width: 440px; }
@@ -573,9 +731,13 @@
   </div>
 
   <div class="portal-stage" id="stage">
-    <div class="portal life-active" id="portal">
+    <div class="portal-shell life-active" id="portalShell">
+      <div class="portal-bloom-soft" aria-hidden="true"></div>
+      <div class="portal-bloom" aria-hidden="true"></div>
+      <div class="portal-rim" aria-hidden="true"></div>
 
-      <!-- LIFE -->
+      <div class="portal life-active" id="portal">
+
       <section class="world life active" data-portal="life" data-index="0">
         <div class="life-sun" id="lifeSun" aria-hidden="true"></div>
         <div class="life-grass" aria-hidden="true">
@@ -610,7 +772,6 @@
         </div>
       </section>
 
-      <!-- BUILD -->
       <section class="world build" data-portal="build" data-index="1" id="buildWorld">
         <div class="build-icons" aria-hidden="true">
           <span class="build-icon i1">🏠</span>
@@ -636,7 +797,6 @@
         </div>
       </section>
 
-      <!-- WORK -->
       <section class="world work" data-portal="work" data-index="2">
         <div class="category">03</div>
         <h2>Work</h2>
@@ -648,7 +808,6 @@
         </div>
       </section>
 
-      <!-- COMMERCE -->
       <section class="world commerce" data-portal="commerce" data-index="3">
         <div class="category">04</div>
         <h2>Commerce</h2>
@@ -659,6 +818,7 @@
         </div>
       </section>
 
+      </div>
     </div>
   </div>
 
@@ -668,11 +828,11 @@
     <div class="nav-dot" data-index="2"></div>
     <div class="nav-dot" data-index="3"></div>
   </div>
-  <!-- <div class="hint">swipe left / right</div> -->
 
   <script>
     const body = document.body;
     const portal = document.getElementById('portal');
+    const portalShell = document.getElementById('portalShell');
     const stage = document.getElementById('stage');
     const worlds = [...document.querySelectorAll('.world')];
     const dots = [...document.querySelectorAll('.nav-dot')];
@@ -691,11 +851,39 @@
     const FADE_MS = 200;
 
     let index = 0;
+    let linkIndex = -1;
     let startX = 0;
     let deltaX = 0;
     let dragging = false;
     let sunAnim = null;
     let transitioning = false;
+
+    function setChroma(on) {
+      portalShell.classList.toggle('chroma', on);
+    }
+
+    function getActiveLinks() {
+      const world = worlds[index];
+      if (!world) return [];
+      return [...world.querySelectorAll('.links a')];
+    }
+
+    function clearLinkSelection() {
+      document.querySelectorAll('.links a.is-selected').forEach((a) => {
+        a.classList.remove('is-selected');
+      });
+      linkIndex = -1;
+    }
+
+    function setLinkSelection(next) {
+      const links = getActiveLinks();
+      if (!links.length) return;
+
+      clearLinkSelection();
+      linkIndex = ((next % links.length) + links.length) % links.length;
+      links[linkIndex].classList.add('is-selected');
+      setChroma(true);
+    }
 
     function sunPoint(t, w, h) {
       const x = -30 + t * (w + 60);
@@ -858,6 +1046,8 @@
       body.classList.add(`portal-${name}`);
       portal.classList.remove('life-active', 'build-active', 'work-active', 'commerce-active');
       portal.classList.add(`${name}-active`);
+      portalShell.classList.remove('life-active', 'build-active', 'work-active', 'commerce-active');
+      portalShell.classList.add(`${name}-active`);
     }
 
     function activateWorldEffects(name) {
@@ -883,6 +1073,9 @@
       if (nextIndex === index) return;
 
       transitioning = true;
+      clearLinkSelection();
+      setChroma(false);
+
       const prev = worlds[index];
       const next = worlds[nextIndex];
       const name = PORTALS[nextIndex];
@@ -908,7 +1101,6 @@
       }, 480);
     }
 
-    /* Swipe */
     stage.addEventListener('touchstart', (e) => {
       dragging = true;
       startX = e.touches[0].clientX;
@@ -928,9 +1120,54 @@
       }
     });
 
+    /* Click portal → chromatic; click outside → normal */
+    portal.addEventListener('pointerdown', () => {
+      setChroma(true);
+    });
+
+    document.addEventListener('pointerdown', (e) => {
+      if (!portalShell.contains(e.target)) {
+        setChroma(false);
+        clearLinkSelection();
+      }
+    });
+
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') { e.preventDefault(); setPortal(index + 1, 1); }
-      if (e.key === 'ArrowLeft')  { e.preventDefault(); setPortal(index - 1, -1); }
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        clearLinkSelection();
+        setChroma(false);
+        setPortal(index + 1, 1);
+        return;
+      }
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        clearLinkSelection();
+        setChroma(false);
+        setPortal(index - 1, -1);
+        return;
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        const links = getActiveLinks();
+        if (!links.length) return;
+        setLinkSelection(linkIndex < 0 ? 0 : linkIndex + 1);
+        return;
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        const links = getActiveLinks();
+        if (!links.length) return;
+        setLinkSelection(linkIndex < 0 ? links.length - 1 : linkIndex - 1);
+        return;
+      }
+      if (e.key === 'Enter') {
+        const links = getActiveLinks();
+        if (linkIndex >= 0 && links[linkIndex]) {
+          e.preventDefault();
+          links[linkIndex].click();
+        }
+      }
     });
 
     dots.forEach((dot) => {
