@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#020617" id="themeColor">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="icon" href="shared/images/icons/favicon.png" type="image/png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="shared/images/icons/favicon-white.png" type="image/png" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" href="shared/images/icons/apple-touch-icon.png">
@@ -284,7 +286,7 @@
     }
 
     .header {
-      padding: 130px 20px 0px; /* adjust to raise / lower on the page */
+      padding: 130px 20px 0px;
       text-align: center;
       position: relative;
       z-index: 2;
@@ -292,7 +294,7 @@
 
     @media (max-width: 768px) {
       .header {
-        padding-top: 80px; /* mobile only */
+        padding-top: 80px;
       }
     }
 
@@ -335,7 +337,7 @@
       position: relative;
       z-index: 1;
       touch-action: pan-y;
-      padding-top: 20px; /* adjust buffer between name and portal */
+      padding-top: 20px;
     }
 
     .portal {
@@ -869,6 +871,12 @@
     const buildIcons = [...document.querySelectorAll('.build-icon')];
 
     const PORTALS = ['life', 'build', 'work', 'commerce'];
+    const THEME = {
+      life:     '#020617',
+      build:    '#03140a',
+      work:     '#000000',
+      commerce: '#321200'
+    };
     const LIFE_MOVE_MS = 1100;
     const GRASS_MS = 900;
     const SUN_REST_T = 0.62;
@@ -883,6 +891,11 @@
     let dragging = false;
     let sunAnim = null;
     let transitioning = false;
+
+    function setThemeColor(name) {
+      const meta = document.getElementById('themeColor');
+      if (meta) meta.setAttribute('content', THEME[name] || '#000000');
+    }
 
     function setChroma(on) {
       portalShell.classList.toggle('chroma', on);
@@ -1074,6 +1087,7 @@
       portal.classList.add(`${name}-active`);
       portalShell.classList.remove('life-active', 'build-active', 'work-active', 'commerce-active');
       portalShell.classList.add(`${name}-active`);
+      setThemeColor(name);
     }
 
     function activateWorldEffects(name) {
@@ -1146,7 +1160,6 @@
       }
     });
 
-    /* Click portal → chromatic; click outside → normal */
     portal.addEventListener('pointerdown', () => {
       setChroma(true);
     });
