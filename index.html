@@ -290,6 +290,21 @@
       z-index: 2;
     }
 
+    @media (max-width: 768px) {
+      .header {
+        padding-top: 10px; /* mobile only */
+      }
+    }
+
+    @media (min-width: 769px) {
+      .portal-stage {
+        max-width: 440px;
+      }
+      .portal {
+        min-height: 560px;
+      }
+    }
+
     .name {
       font-size: 3.0rem;
       font-weight: 600;
@@ -730,14 +745,6 @@
     }
     body.portal-commerce .nav-dot.active {
       background: #fb923c;
-    }
-
-    @media (min-width: 769px) {
-      .header {
-        padding-top: 10px;
-      }
-      .portal-stage { max-width: 440px; }
-      .portal { min-height: 560px; }
     }
   </style>
 </head>
