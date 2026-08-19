@@ -14,8 +14,13 @@
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* ===== Portal bloom (add-only) ===== */
     @property --portal-spin {
+      syntax: '<angle>';
+      inherits: false;
+      initial-value: 0deg;
+    }
+
+    @property --chroma-hue {
       syntax: '<angle>';
       inherits: false;
       initial-value: 0deg;
@@ -33,6 +38,10 @@
     @keyframes portalBloomBreatheSoft {
       0%, 100% { filter: blur(22px); opacity: 0.28; }
       50%      { filter: blur(32px); opacity: 0.48; }
+    }
+
+    @keyframes chromaHue {
+      to { --chroma-hue: 360deg; }
     }
 
     .portal-shell {
@@ -139,7 +148,6 @@
       --rim-hot: #fff7ed;
     }
 
-    /* Chromatic — interaction state (Portal 5 / 6 energy) */
     .portal-shell.chroma .portal-bloom {
       background: conic-gradient(
         from var(--portal-spin),
@@ -200,6 +208,84 @@
       overflow: hidden;
       background: transparent;
       transition: background 0.55s ease;
+      --ground-hot: #7dd3fc;
+      --ground-soft: #38bdf8;
+      --ground-core: #e0f2fe;
+    }
+
+    body.portal-life {
+      --ground-hot: #7dd3fc;
+      --ground-soft: #38bdf8;
+      --ground-core: #e0f2fe;
+    }
+    body.portal-build {
+      --ground-hot: #4ade80;
+      --ground-soft: #22c55e;
+      --ground-core: #bbf7d0;
+    }
+    body.portal-work {
+      --ground-hot: #5a6677;
+      --ground-soft: #303d4f;
+      --ground-core: #94a3b8;
+    }
+    body.portal-commerce {
+      --ground-hot: #fb923c;
+      --ground-soft: #f97316;
+      --ground-core: #ffedd5;
+    }
+
+    /* ===== Chromatic ground — continuous hue drift, no reset ===== */
+    body:has(.portal-shell.chroma) {
+      --ground-hot: #ff6b9d;
+      --ground-soft: #9b6dff;
+      --ground-core: #5aa9ff;
+    }
+
+    body:has(.portal-shell.chroma) .scene-ground-wash {
+      background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        color-mix(in srgb, #ff6b9d 11%, transparent) 32%,
+        color-mix(in srgb, #9b6dff 9%, transparent) 58%,
+        color-mix(in srgb, #5aa9ff 7%, transparent) 100%
+      );
+      opacity: 0.88;
+      filter: saturate(1.08) hue-rotate(var(--chroma-hue));
+      animation: chromaHue 11s linear infinite;
+    }
+
+    body:has(.portal-shell.chroma) .scene-ground-reflect {
+      background: radial-gradient(
+        ellipse 48% 60% at 50% 100%,
+        rgba(255, 107, 157, 0.32) 0%,
+        rgba(155, 109, 255, 0.18) 30%,
+        rgba(90, 169, 255, 0.12) 52%,
+        transparent 78%
+      );
+      filter: blur(26px) saturate(1.12) hue-rotate(var(--chroma-hue));
+      opacity: 0.78;
+      animation: chromaHue 11s linear infinite;
+    }
+
+    body:has(.portal-shell.chroma) .scene-ground-line {
+      background: radial-gradient(
+        ellipse 60% 90% at 50% 50%,
+        rgba(255, 255, 255, 0.18) 0%,
+        rgba(255, 107, 157, 0.14) 28%,
+        rgba(155, 109, 255, 0.10) 55%,
+        transparent 85%
+      );
+      filter: blur(14px) saturate(1.08) hue-rotate(var(--chroma-hue));
+      opacity: 0.65;
+      animation: chromaHue 11s linear infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      body:has(.portal-shell.chroma) .scene-ground-wash,
+      body:has(.portal-shell.chroma) .scene-ground-reflect,
+      body:has(.portal-shell.chroma) .scene-ground-line {
+        animation: none;
+      }
     }
 
     .ambient {
@@ -278,6 +364,83 @@
       }
     }
 
+    /* ===== Soft full-width floor under portal ===== */
+    .scene-ground {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: min(28vh, 240px);
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 35%, #000 100%);
+      mask-image: linear-gradient(to bottom, transparent 0%, #000 35%, #000 100%);
+    }
+
+    .scene-ground-plane {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(0, 0, 0, 0.06) 30%,
+        rgba(0, 0, 0, 0.28) 65%,
+        rgba(0, 0, 0, 0.5) 100%
+      );
+    }
+
+    .scene-ground-wash {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 100%;
+      background: linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--ground-soft) 0%, transparent) 0%,
+        color-mix(in srgb, var(--ground-soft) 14%, transparent) 45%,
+        color-mix(in srgb, var(--ground-soft) 8%, transparent) 100%
+      );
+      opacity: 0.85;
+      transition: background 0.55s ease, opacity 0.55s ease;
+    }
+
+    .scene-ground-reflect {
+      position: absolute;
+      left: 50%;
+      bottom: 18%;
+      width: 120%;
+      height: 70%;
+      transform: translateX(-50%);
+      background: radial-gradient(
+        ellipse 42% 55% at 50% 100%,
+        color-mix(in srgb, var(--ground-hot) 55%, transparent) 0%,
+        color-mix(in srgb, var(--ground-soft) 22%, transparent) 40%,
+        transparent 72%
+      );
+      filter: blur(28px);
+      opacity: 0.75;
+      transition: background 0.55s ease, opacity 0.55s ease;
+    }
+
+    .scene-ground-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 22%;
+      height: 48px;
+      background: radial-gradient(
+        ellipse 55% 80% at 50% 50%,
+        color-mix(in srgb, var(--ground-core) 35%, transparent) 0%,
+        color-mix(in srgb, var(--ground-hot) 18%, transparent) 40%,
+        transparent 75%
+      );
+      filter: blur(16px);
+      opacity: 0.55;
+      transition: background 0.55s ease, opacity 0.55s ease;
+    }
+
     .header,
     .portal-stage,
     .nav-dots {
@@ -338,6 +501,7 @@
       z-index: 1;
       touch-action: pan-y;
       padding-top: 20px;
+      padding-bottom: 24px;
     }
 
     .portal {
@@ -719,7 +883,7 @@
       display: flex;
       gap: 8px;
       justify-content: center;
-      padding: 22px 0 8px;
+      padding: 8px 0;
       position: relative;
       z-index: 2;
     }
@@ -752,6 +916,14 @@
 </head>
 <body class="portal-life">
   <div class="ambient" aria-hidden="true"></div>
+
+  <div class="scene-ground" id="sceneGround" aria-hidden="true">
+    <div class="scene-ground-plane"></div>
+    <div class="scene-ground-wash"></div>
+    <div class="scene-ground-reflect"></div>
+    <div class="scene-ground-line"></div>
+  </div>
+
   <div class="header">
     <h1 class="name">
       <a href="https://briancrink.com" class="name-link">Brian Crink</a>
