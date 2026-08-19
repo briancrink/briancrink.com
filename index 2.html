@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#38bdf8" id="themeColor">
+  <meta name="theme-color" content="#020617" id="themeColor">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="icon" href="shared/images/icons/favicon.png" type="image/png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="shared/images/icons/favicon-white.png" type="image/png" media="(prefers-color-scheme: dark)">
@@ -14,6 +14,7 @@
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* ===== Portal bloom (add-only) ===== */
     @property --portal-spin {
       syntax: '<angle>';
       inherits: false;
@@ -138,6 +139,7 @@
       --rim-hot: #fff7ed;
     }
 
+    /* Chromatic — interaction state (Portal 5 / 6 energy) */
     .portal-shell.chroma .portal-bloom {
       background: conic-gradient(
         from var(--portal-spin),
@@ -172,9 +174,14 @@
 
     html {
       height: 100%;
-      background: #38bdf8;
-      transition: background-color 0.55s ease;
+      background: #020617;
+      transition: background 0.55s ease;
     }
+
+    html:has(body.portal-life)     { background: #020617; }
+    html:has(body.portal-build)    { background: #03140a; }
+    html:has(body.portal-work)     { background: #000000; }
+    html:has(body.portal-commerce) { background: #321200; }
 
     html, body {
       min-height: 100%;
@@ -193,19 +200,6 @@
       overflow: hidden;
       background: transparent;
       transition: background 0.55s ease;
-    }
-
-    /* Solid top strip under status-bar region — updates mid-session */
-    #chromeBleed {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: calc(env(safe-area-inset-top, 0px) + 24px);
-      z-index: 10000;
-      pointer-events: none;
-      background-color: #38bdf8;
-      transition: background-color 0.45s ease;
     }
 
     .ambient {
@@ -245,9 +239,9 @@
       body.portal-life .ambient {
         background:
           radial-gradient(
-            ellipse 160% 180% at 50% 0%,
-            rgba(14, 165, 233, 0.95) 0%,
-            rgba(14, 165, 233, 0.45) 40%,
+            ellipse 120% 140% at 50% 40%,
+            rgba(14, 164, 233, 0.85) 0%,
+            rgba(14, 164, 233, 0.3) 50%,
             #020617 100%
           ),
           #020617;
@@ -255,9 +249,9 @@
       body.portal-build .ambient {
         background:
           radial-gradient(
-            ellipse 160% 180% at 50% 0%,
-            rgba(22, 163, 74, 0.95) 0%,
-            rgba(22, 163, 74, 0.45) 40%,
+            ellipse 120% 140% at 50% 40%,
+            rgba(22, 163, 74, 0.85) 0%,
+            rgba(22, 163, 74, 0.3) 50%,
             #03140a 100%
           ),
           #03140a;
@@ -265,9 +259,9 @@
       body.portal-work .ambient {
         background:
           radial-gradient(
-            ellipse 160% 180% at 50% 0%,
-            rgba(40, 40, 40, 0.95) 0%,
-            rgba(20, 20, 20, 0.5) 40%,
+            ellipse 120% 140% at 50% 40%,
+            rgba(60, 60, 60, 0.9) 0%,
+            rgba(25, 25, 25, 0.5) 50%,
             #000000 100%
           ),
           #000000;
@@ -275,9 +269,9 @@
       body.portal-commerce .ambient {
         background:
           radial-gradient(
-            ellipse 160% 180% at 50% 0%,
-            rgba(255, 89, 0, 0.95) 0%,
-            rgba(255, 89, 0, 0.45) 40%,
+            ellipse 120% 140% at 50% 40%,
+            rgba(255, 89, 0, 0.85) 0%,
+            rgba(255, 89, 0, 0.3) 50%,
             #321200 100%
           ),
           #321200;
@@ -757,7 +751,6 @@
   </style>
 </head>
 <body class="portal-life">
-  <div id="chromeBleed" aria-hidden="true"></div>
   <div class="ambient" aria-hidden="true"></div>
   <div class="header">
     <h1 class="name">
@@ -879,10 +872,10 @@
 
     const PORTALS = ['life', 'build', 'work', 'commerce'];
     const THEME = {
-      life:     '#38bdf8',
-      build:    '#4ade80',
-      work:     '#111111',
-      commerce: '#fb923c'
+      life:     '#020617',
+      build:    '#03140a',
+      work:     '#000000',
+      commerce: '#321200'
     };
     const LIFE_MOVE_MS = 1100;
     const GRASS_MS = 900;
@@ -900,19 +893,8 @@
     let transitioning = false;
 
     function setThemeColor(name) {
-      const color = THEME[name] || '#000000';
-
-      const bleed = document.getElementById('chromeBleed');
-      if (bleed) bleed.style.backgroundColor = color;
-
-      document.documentElement.style.backgroundColor = color;
-
-      document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.remove());
-      const meta = document.createElement('meta');
-      meta.name = 'theme-color';
-      meta.id = 'themeColor';
-      meta.content = color;
-      document.head.appendChild(meta);
+      const meta = document.getElementById('themeColor');
+      if (meta) meta.setAttribute('content', THEME[name] || '#000000');
     }
 
     function setChroma(on) {
