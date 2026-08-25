@@ -1,3 +1,3 @@
-[submodule "shared"]
-	path = shared
-	url = git@github.com:briancrink/briancrink.com-shared.git
+[submodule "resources"]
+	path = resources
+	url = git@github.com:briancrink/resources.briancrink.com.git
