@@ -31,14 +31,101 @@
 
     .container {
       text-align: center;
-      margin-top: -60px
+      margin-top: -150px
+    }
+
+    @property --pc1 { syntax: '<color>'; inherits: false; initial-value: #ff006e; }
+    @property --pc2 { syntax: '<color>'; inherits: false; initial-value: #8338ec; }
+    @property --pc3 { syntax: '<color>'; inherits: false; initial-value: #3a86ff; }
+    @property --pc4 { syntax: '<color>'; inherits: false; initial-value: #06d6a0; }
+    @property --pc5 { syntax: '<color>'; inherits: false; initial-value: #ffbe0b; }
+
+    @keyframes portalChromaFade {
+      0%   { --pc1: #ff006e; --pc2: #8338ec; --pc3: #3a86ff; --pc4: #06d6a0; --pc5: #ffbe0b; }
+      20%  { --pc1: #ffbe0b; --pc2: #ff006e; --pc3: #8338ec; --pc4: #3a86ff; --pc5: #06d6a0; }
+      40%  { --pc1: #06d6a0; --pc2: #ffbe0b; --pc3: #ff006e; --pc4: #8338ec; --pc5: #3a86ff; }
+      60%  { --pc1: #3a86ff; --pc2: #06d6a0; --pc3: #ffbe0b; --pc4: #ff006e; --pc5: #8338ec; }
+      80%  { --pc1: #8338ec; --pc2: #3a86ff; --pc3: #06d6a0; --pc4: #ffbe0b; --pc5: #ff006e; }
+      100% { --pc1: #ff006e; --pc2: #8338ec; --pc3: #3a86ff; --pc4: #06d6a0; --pc5: #ffbe0b; }
+    }
+
+    .site-nav-link.portal {
+      background-image: linear-gradient(
+        90deg,
+        var(--pc1),
+        var(--pc2),
+        var(--pc3),
+        var(--pc4),
+        var(--pc5)
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      animation: portalChromaFade 8s linear infinite;
+    }
+
+    .site-nav {
+      position: relative;
+      margin: 0;
+      color: #ffffff;
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55rem;
+      white-space: nowrap;
+      letter-spacing: 0.16rem;
+    }
+
+    .site-nav .portal {
+      text-transform: uppercase;
+      font-size: 0.95rem;
+      letter-spacing: 0.08rem;
+    }
+
+    .site-nav .nav-dot {
+      color: #ffffff;
+      font-weight: 400;
+      font-size: 1.0rem;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .site-nav .status {
+      color: #585858;
+      font-size: 1.0rem;
+      margin: 0;
+      line-height: 1;
+      letter-spacing: 0.04rem;
+      text-transform: titlecase;
+    }
+
+    .site-nav-link {
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+
+    .site-nav-link:hover {
+      opacity: 0.85;
+    }
+
+    .identity {
+      position: relative;
+      left: 0;
+      right: 0;
+      text-align: center;
+      z-index: 1;
     }
 
     .name {
       font-size: 3.0rem;
       font-weight: 600;
       color: #ffffff;
-      margin: 0 0 15px 0;
+      margin: 0;
       letter-spacing: -0.5px;
     }
 
@@ -52,20 +139,20 @@
     .name-link:hover {
       opacity: 0.85;
     }
-
-    .status {
-      color: #666666;
-      font-size: 1rem;
-      margin: 0;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-    }
   </style>
 
   <div class="container">
-    <p class="status">404</p>
-    <h1 class="name"><a href="https://briancrink.com" class="name-link">Brian Crink</a></h1>
-  </div>
-
+    <div class="header">
+      <div class="site-nav">
+        <p class="site-link">
+          <a href="https://portal.briancrink.com" class="site-nav-link portal">Portal</a>
+          <span class="nav-dot" aria-hidden="true">•</span>
+          <a href="https://site.briancrink.com/map" class="site-nav-link status">404</a>
+        </p>
+      </div>
+      <div class="identity">
+          <h1 class="name"><a href="https://briancrink.com" class="name-link">Brian Crink</a></h1>
+      </div>
+    </div>
 </body>
 </html>
