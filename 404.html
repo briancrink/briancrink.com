@@ -8,20 +8,18 @@
   <link rel="apple-touch-icon" href="resources/images/icons/apple-touch-icon.png">
   <link rel="apple-touch-icon" href="resources/images/icons/apple-touch-icon-dark.png" media="(prefers-color-scheme: dark)">
   <title>404 | Brian Crink</title>
-</head>
-<body>
   <style>
     body {
-        background: #000000;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        margin: 0;
-        height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background 0.4s;
-        opacity: 0;
-        animation: fadeIn 1.3s forwards;
+      background: #000000;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.4s;
+      opacity: 0;
+      animation: fadeIn 1.3s forwards;
     }
 
     @keyframes fadeIn {
@@ -31,7 +29,7 @@
 
     .container {
       text-align: center;
-      margin-top: -150px
+      margin-top: -150px;
     }
 
     @property --pc1 { syntax: '<color>'; inherits: false; initial-value: #ff006e; }
@@ -65,8 +63,13 @@
       animation: portalChromaFade 8s linear infinite;
     }
 
+    @media (prefers-reduced-motion: reduce) {
+      .site-nav-link.portal {
+        animation: none;
+      }
+    }
+
     .site-nav {
-      position: relative;
       margin: 0;
       color: #ffffff;
       font-size: 1rem;
@@ -74,9 +77,16 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.55rem;
       white-space: nowrap;
       letter-spacing: 0.16rem;
+    }
+
+    .site-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55rem;
+      margin: 0;
     }
 
     .site-nav .portal {
@@ -99,7 +109,6 @@
       margin: 0;
       line-height: 1;
       letter-spacing: 0.04rem;
-      text-transform: titlecase;
     }
 
     .site-nav-link {
@@ -111,6 +120,25 @@
 
     .site-nav-link:hover {
       opacity: 0.85;
+    }
+
+    .map-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: inherit;
+      text-decoration: none;
+      line-height: 0;
+    }
+
+    .map-link:hover {
+      opacity: 0.85;
+    }
+
+    .map-icon {
+      width: 3.0rem;
+      height: 3.0rem;
+      display: block;
     }
 
     .identity {
@@ -135,24 +163,50 @@
       cursor: pointer;
       transition: opacity 0.2s ease;
     }
-    
+
     .name-link:hover {
       opacity: 0.85;
     }
   </style>
-
+</head>
+<body>
   <div class="container">
     <div class="header">
       <div class="site-nav">
         <p class="site-link">
-          <a href="https://portal.briancrink.com" class="site-nav-link portal">Portal</a>
+<a href="https://portal.briancrink.com" class="site-nav-link portal">Portal</a>
+          <!-- <span class="nav-dot" aria-hidden="true">•</span> -->
+          <a href="https://site.briancrink.com/map" class="map-link" aria-label="Site map"><svg class="map-icon" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <clipPath id="mapFillPortal"><path d="M3.15 7.85 L8.85 4.55 L15.05 8.05 L20.7 4.75 L20.7 16.25 L15.05 19.55 L8.85 16.05 L3.15 19.35 Z"/></clipPath>
+              <g clip-path="url(#mapFillPortal)">
+                <path d="M3.15 7.85 L8.85 4.55 L15.05 8.05 L20.7 4.75 L20.7 16.25 L15.05 19.55 L8.85 16.05 L3.15 19.35 Z" fill="#3f8f4e"/>
+                <path d="M3.15 19.35 C 8.85 11.05, 15.05 13.8, 20.7 8.75 V 14.65 C 18.9 15.9, 16.15 18.4, 14.85 19.35 L 3.15 19.35 Z" fill="#3a86ff"/>
+              </g>
+              <path d="M3.15 7.85 L8.85 4.55 L15.05 8.05 L20.7 4.75 L20.7 16.25 L15.05 19.55 L8.85 16.05 L3.15 19.35 Z" fill="none" stroke="rgba(47, 58, 51, 0.32)" stroke-width="0.85"/>
+              <line x1="8.85" y1="6.2" x2="8.85" y2="14.4" stroke="rgba(255,255,255,0.62)" stroke-width="0.36" stroke-linecap="round" stroke-dasharray="0.42 2.25"/>
+              <line x1="15.05" y1="9.7" x2="15.05" y2="17.9" stroke="rgba(255,255,255,0.62)" stroke-width="0.36" stroke-linecap="round" stroke-dasharray="0.42 2.25"/>
+              <g class="map-compass">
+                <circle cx="6.114" cy="14.75" r="2.38" fill="#ffffff" stroke="#2eb5e8" stroke-width="0.58"/>
+                <circle cx="6.114" cy="14.75" r="2.07" fill="none" stroke="#1b94d0" stroke-width="0.16"/>
+                <line x1="6.114" y1="13.02" x2="6.114" y2="12.68" stroke="#9ecce4" stroke-width="0.22" stroke-linecap="round"/>
+                <line x1="6.114" y1="16.48" x2="6.114" y2="16.82" stroke="#9ecce4" stroke-width="0.22" stroke-linecap="round"/>
+                <line x1="4.384" y1="14.75" x2="4.044" y2="14.75" stroke="#9ecce4" stroke-width="0.22" stroke-linecap="round"/>
+                <line x1="7.844" y1="14.75" x2="8.184" y2="14.75" stroke="#9ecce4" stroke-width="0.22" stroke-linecap="round"/>
+                <path d="M7.259 13.605 L5.605 14.241 L6.623 15.259 Z" fill="#ef4a3c"/>
+                <path d="M4.969 15.895 L5.605 14.241 L6.623 15.259 Z" fill="#33b7e8"/>
+                <circle cx="6.114" cy="14.75" r="0.46" fill="#ffffff"/>
+              </g>
+              <line x1="19.545" y1="13.689" x2="22.395" y2="16.539" stroke="#e0b36a" stroke-width="1.85" stroke-linecap="round"/>
+              <circle cx="16.858" cy="11.002" r="2.85" fill="rgba(90, 190, 255, 0.38)" stroke="#8b9098" stroke-width="0.82"/>
+            </svg></a>
           <span class="nav-dot" aria-hidden="true">•</span>
           <a href="https://site.briancrink.com/map" class="site-nav-link status">404</a>
         </p>
       </div>
       <div class="identity">
-          <h1 class="name"><a href="https://briancrink.com" class="name-link">Brian Crink</a></h1>
+        <h1 class="name"><a href="https://briancrink.com" class="name-link">Brian Crink</a></h1>
       </div>
     </div>
+  </div>
 </body>
 </html>
