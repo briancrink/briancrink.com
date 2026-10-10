@@ -8,12 +8,233 @@
   <link rel="apple-touch-icon" href="resources/images/icons/apple-touch-icon.png">
   <link rel="apple-touch-icon" href="resources/images/icons/apple-touch-icon-dark.png" media="(prefers-color-scheme: dark)">
   <title>Brian Crink</title>
+  <style>
+  :root { --gray: #6b6b6b; --white: #fff; --row: 48px; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; background: #000; overflow: hidden;
+    overscroll-behavior: none; touch-action: none; }
+  body { display: flex; align-items: center; justify-content: center;
+    font: 400 clamp(14px, 3.6vw, 40px)/1.5 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    color: var(--white); -webkit-user-select: none; user-select: none; }
+  .line { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
+    align-items: center; width: 100%; transition: transform .8s cubic-bezier(.2,.8,.2,1); }
+  .reel { position: relative; height: calc(var(--row) * 9);
+    -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
+            mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent); }
+  .item { position: absolute; left: 0; right: 0; top: 50%; height: var(--row);
+    margin-top: calc(var(--row) / -2); line-height: var(--row); white-space: nowrap;
+    color: var(--gray); transition: color .35s; will-change: transform, opacity; }
+  .left .item { text-align: right; }
+  .mid { color: var(--gray); white-space: pre; }
+  .right { display: flex; align-items: center; opacity: 0; transition: opacity .6s; pointer-events: none; }
+  .right.on { opacity: 1; }
+  .slash { color: var(--gray); }
+  .right .reel { flex: 1; min-width: 0; }
+  .hint { position: fixed; bottom: max(24px, env(safe-area-inset-bottom)); left: 0; right: 0;
+    text-align: center; font-size: 12px; color: #444; }
+  </style>
+  </head>
+  <body>
+    <div class="line" id="line">
+      <div class="reel left" id="domReel"></div>
+      <div class="mid">.briancrink.com</div>
+      <div class="right" id="right"><span class="slash">/</span><div class="reel" id="pgReel"></div></div>
+    </div>
+    <div class="hint" id="hint">loading…</div>
+
   <script>
-    window.location.replace("https://portal.briancrink.com");
+  // ── Configuration ──────────────────────────────────────────────────────────
+  const SITEMAP_URL = "resources/site/map.json";      // served from the same site as this page
+  const ROOT_HOST = "briancrink.com";       // the root entry in the sitemap is skipped (it isn't a subdomain)
+  const HIDDEN_STATUSES = ["unlisted"];     // availability statuses left out of the reels
+  const PAGE_LABEL = "path";                // "path" -> docs, adopt/cat   |   "title" -> API Docs, Adopt a Cat
+  const START_SUBDOMAIN = "home";           // which subdomain the reel opens on
+  const DELAY = 1000, DEFAULT_PAGE_WAIT = 7000;
+  const FADE_OUT_MS = 2200, FADE_IN_MS = 600, REDIRECT_PAUSE = 2000;
+
+  // ── State ──────────────────────────────────────────────────────────────────
+  const $ = id => document.getElementById(id);
+  const lineEl = $("line"), rightEl = $("right"), hintEl = $("hint");
+  const mod = (a, n) => ((a % n) + n) % n;
+  const ROWS = 9, MID = 4;
+  let rowPx = 48;
+  function measure() {
+    rowPx = parseFloat(getComputedStyle(document.body).fontSize) * 1.5;
+    document.documentElement.style.setProperty("--row", rowPx + "px");
+  }
+  measure(); addEventListener("resize", measure);
+
+  const mk = n => ({ n, pos: 0, vel: 0, target: null, drag: false, dim: 0, dimTarget: 0 });
+  let SITES = [], subLabels = [""], pageItems = [], pagesList = [""];
+  const dom = mk(1), pg = mk(1);
+  const build = el => Array.from({ length: ROWS }, () => {
+    const d = document.createElement("div"); d.className = "item"; el.appendChild(d); return d; });
+  const domRows = build($("domReel")), pgRows = build($("pgReel"));
+
+  let ready = false, mode = "domain", holdIdx = null, pageTouched = false, isSettled = false;
+  let lastInput = 0, settledAt = null, started = false, exiting = false, exitAt = 0;
+  const active = () => (mode === "domain" ? dom : pg);
+  const touched = () => { started = true; if (mode === "page") pageTouched = true; };
+  const curSite = () => SITES[mod(Math.round(dom.pos), dom.n)];
+  const visible = o => !HIDDEN_STATUSES.includes(o?.availability?.status);
+
+  // ── Load the sitemap ───────────────────────────────────────────────────────
+  fetch(SITEMAP_URL, { cache: "no-cache" })
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(map => {
+      SITES = (map.domains || [])
+        .filter(d => d.host !== ROOT_HOST && d.subdomain && visible(d))
+        .map(d => {
+          let pages = (d.pages || []).filter(visible).map(p => ({
+            label: PAGE_LABEL === "title" ? p.title : String(p.path || "").replace(/^\//, ""),
+            url: p.url || `${d.url}${p.path || ""}`,
+          }));
+          if (!pages.length) pages = [{ label: "", url: d.url }];   // no subpages: go to the subdomain itself
+          return { sub: d.subdomain, url: d.url, pages };
+        });
+      if (!SITES.length) throw new Error("no domains");
+      subLabels = SITES.map(s => s.sub);
+      dom.n = SITES.length;
+      dom.pos = Math.max(0, SITES.findIndex(s => s.sub === START_SUBDOMAIN));
+      hintEl.textContent = "scroll / swipe / ↑ ↓ to move · → select · ← back · enter to go";
+      ready = true;
+      requestAnimationFrame(tick);
+    })
+    .catch(err => { hintEl.textContent = "couldn't load sitemap.json"; console.error(err); });
+
+  // ── Drawing ────────────────────────────────────────────────────────────────
+  // Chosen row stays; the rest fade by r.dim (0 = all visible, 1 = only the chosen row)
+  function draw(r, rows, list, white) {
+    const base = Math.round(r.pos), frac = r.pos - base;
+    rows.forEach((el, j) => {
+      const k = j - MID, d = k - frac, label = list[mod(base + k, list.length)];
+      if (el._t !== label) { el.textContent = label; el._t = label; }
+      let o = Math.max(0, 1 - Math.abs(d) * 0.26);
+      if (k !== 0) o *= 1 - r.dim * r.dim * (3 - 2 * r.dim);   // smoothstep ease
+      el.style.transform = `translateY(${d * rowPx}px)`;
+      el.style.opacity = o.toFixed(3);
+      el.style.color = k === 0 && white ? "#fff" : "";
+    });
+  }
+
+  // Shift the whole line so "subdomain.briancrink.com/page" is centred as a unit
+  const ctx = document.createElement("canvas").getContext("2d");
+  function recentre() {
+    const cs = getComputedStyle(document.body);
+    ctx.font = `${cs.fontSize} ${cs.fontFamily}`;
+    const ws = ctx.measureText(curSite().sub).width;
+    const wr = Math.max(...pagesList.map(p => ctx.measureText("/" + p).width));
+    lineEl.style.transform = `translateX(${(ws - wr) / 2}px)`;
+  }
+
+  // ── Stage changes ──────────────────────────────────────────────────────────
+  function enterPages() {
+    pageItems = curSite().pages; pagesList = pageItems.map(p => p.label);
+    Object.assign(pg, { n: pageItems.length, pos: 0, vel: 0, target: null, dim: 0 });
+    mode = "page"; pageTouched = false; rightEl.classList.add("on"); recentre(); settledAt = null;
+  }
+  function backToDomains() {
+    mode = "domain"; rightEl.classList.remove("on"); lineEl.style.transform = "translateX(0)";
+    holdIdx = mod(Math.round(dom.pos), dom.n); settledAt = null;
+  }
+  function startExit() {
+    if (exiting) return;
+    exiting = true; exitAt = performance.now() + FADE_OUT_MS + REDIRECT_PAUSE;
+  }
+  function go() { location.href = pageItems[mod(Math.round(pg.pos), pg.n)].url; }
+  const forward = () => { if (mode === "domain") enterPages(); };
+  const back = () => { if (mode === "page") backToDomains(); };
+
+  // ── Main loop ──────────────────────────────────────────────────────────────
+  let prevT = 0;
+  function tick(now) {
+    const dt = prevT ? Math.min(now - prevT, 100) : 16; prevT = now;
+    const r = active(); let settled = false;
+    if (!exiting && !r.drag && now - lastInput > 120) {
+      if (Math.abs(r.vel) > 0.02) { r.pos += r.vel; r.vel *= 0.95; r.target = null; }
+      else {
+        r.vel = 0;
+        const goal = r.target !== null ? r.target : Math.round(r.pos), d = goal - r.pos;
+        if (Math.abs(d) < 0.004) { r.pos = goal; r.target = null; settled = true; }
+        else r.pos += d * 0.16;
+      }
+    }
+    if (!exiting) isSettled = settled;   // keeps its last value while fading out to redirect
+    dom.dimTarget = mode === "page" ? 1 : 0;
+    pg.dimTarget = exiting ? 1 : 0;
+    [dom, pg].forEach(x => {
+      const step = dt / (x.dimTarget ? FADE_OUT_MS : FADE_IN_MS);
+      x.dim = x.dimTarget ? Math.min(1, x.dim + step) : Math.max(0, x.dim - step);
+    });
+    draw(dom, domRows, subLabels, mode === "page" || isSettled);
+    draw(pg, pgRows, pagesList, mode === "page" && isSettled);
+
+    if (exiting) { if (now >= exitAt) { go(); return; } }
+    else {
+      if (mode === "domain" && holdIdx !== null && mod(Math.round(dom.pos), dom.n) !== holdIdx) holdIdx = null;
+      // The default subdomain waits indefinitely for input; the default subpage waits 7s
+      const auto = started && settled && !(mode === "domain" && holdIdx !== null);
+      if (auto) {
+        if (settledAt === null) settledAt = now;
+        if (now - settledAt >= (mode === "page" && !pageTouched ? DEFAULT_PAGE_WAIT : DELAY)) {
+          settledAt = null; mode === "domain" ? enterPages() : startExit();
+        }
+      } else settledAt = null;
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // ── Input ──────────────────────────────────────────────────────────────────
+  // Trackpad / mouse wheel: free scroll (the OS supplies the momentum), then snaps to the nearest row
+  let hx = 0, hxAt = 0;
+  addEventListener("wheel", e => {
+    e.preventDefault(); if (!ready || exiting) return; touched();
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {            // sideways trackpad swipe
+      hx += e.deltaX; const t = performance.now();
+      if (Math.abs(hx) > 60 && t - hxAt > 600) { hx > 0 ? forward() : back(); hx = 0; hxAt = t; }
+      return;
+    }
+    const r = active(); let dy = e.deltaY; if (e.deltaMode === 1) dy *= 33;
+    r.pos += dy / (rowPx * 1.6); r.vel = 0; r.target = null; lastInput = performance.now();
+  }, { passive: false });
+
+  // Arrow keys: one step per press
+  addEventListener("keydown", e => {
+    if (!ready || exiting) return;
+    const r = active();
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault(); touched();
+      r.target = (r.target !== null ? r.target : Math.round(r.pos)) + (e.key === "ArrowDown" ? 1 : -1);
+      r.vel = 0;
+    } else if (e.key === "ArrowRight") { touched(); forward(); }
+    else if (e.key === "ArrowLeft") { touched(); back(); }
+    else if (e.key === "Enter") { touched(); mode === "domain" ? enterPages() : startExit(); }
+  });
+
+  // Touch: vertical drag follows the finger and keeps momentum; a sideways swipe moves between stages
+  let sx = 0, sy = 0, lastY = 0, lastT = 0, axis = null, endX = 0;
+  addEventListener("touchstart", e => {
+    if (!ready || exiting) return; touched();
+    const r = active(); r.drag = true; r.vel = 0; r.target = null; axis = null;
+    sx = endX = e.touches[0].clientX; sy = lastY = e.touches[0].clientY; lastT = performance.now();
+  }, { passive: true });
+  addEventListener("touchmove", e => {
+    e.preventDefault(); if (!ready || exiting) return;
+    const r = active(), t = e.touches[0]; endX = t.clientX;
+    if (!axis && Math.hypot(t.clientX - sx, t.clientY - sy) > 8)
+      axis = Math.abs(t.clientX - sx) > Math.abs(t.clientY - sy) ? "x" : "y";
+    if (axis !== "y") return;
+    const dy = (lastY - t.clientY) / rowPx;
+    r.pos += dy; r.vel = Math.max(-1.5, Math.min(1.5, r.vel * 0.6 + dy * 0.4));
+    lastY = t.clientY; lastT = performance.now(); lastInput = lastT;
+  }, { passive: false });
+  addEventListener("touchend", () => {
+    if (!ready || exiting) return;
+    const r = active(); r.drag = false;
+    if (axis === "x") { r.vel = 0; const dx = sx - endX; if (dx > 50) forward(); else if (dx < -50) back(); }
+    else if (performance.now() - lastT > 80) r.vel = 0;
+    lastInput = 0;
+  });
   </script>
-  <meta http-equiv="refresh" content="0; url=https://portal.briancrink.com">
-  <link rel="canonical" href="https://portal.briancrink.com">
-</head>
-<body style="margin:0; padding:0; background:#000000;">
 </body>
 </html>
