@@ -74,7 +74,13 @@
   let ready = false, mode = "domain", holdIdx = null, pageTouched = false, isSettled = false;
   let lastInput = 0, settledAt = null, started = false, exiting = false, exitAt = 0;
   const active = () => (mode === "domain" ? dom : pg);
-  const touched = () => { started = true; if (mode === "page") pageTouched = true; };
+  // Any input counts as activity: it also cancels a fade-out that is already under way,
+  // so the other subpages fade back in and the wait starts over.
+  const touched = () => {
+    started = true;
+    if (mode === "page") pageTouched = true;
+    if (exiting) { exiting = false; settledAt = null; }
+  };
   const curSite = () => SITES[mod(Math.round(dom.pos), dom.n)];
   const visible = o => !HIDDEN_STATUSES.includes(o?.availability?.status);
 
@@ -85,11 +91,11 @@
       SITES = (map.domains || [])
         .filter(d => d.host !== ROOT_HOST && d.subdomain && visible(d))
         .map(d => {
-          let pages = (d.pages || []).filter(visible).map(p => ({
+          const pages = (d.pages || []).filter(visible).map(p => ({
             label: PAGE_LABEL === "title" ? p.title : String(p.path || "").replace(/^\//, ""),
             url: p.url || `${d.url}${p.path || ""}`,
           }));
-          if (!pages.length) pages = [{ label: "", url: d.url }];   // no subpages: go to the subdomain itself
+          pages.unshift({ label: "", url: d.url });   // blank first subpage = the subdomain's root, always the default
           return { sub: d.subdomain, url: d.url, pages };
         });
       if (!SITES.length) throw new Error("no domains");
@@ -98,6 +104,7 @@
       dom.pos = Math.max(0, SITES.findIndex(s => s.sub === START_SUBDOMAIN));
       hintEl.textContent = "scroll / swipe / ↑ ↓ to move · → select · ← back · enter to go";
       ready = true;
+      recentre(true);   // centre the first view immediately, before anything is drawn
       requestAnimationFrame(tick);
     })
     .catch(err => { hintEl.textContent = "couldn't load sitemap.json"; console.error(err); });
@@ -117,24 +124,32 @@
     });
   }
 
-  // Shift the whole line so "subdomain.briancrink.com/page" is centred as a unit
+  // Shift the whole line so the full URL as currently selected is centred on the page.
+  // Domain stage: "sub.briancrink.com" · Page stage: "sub.briancrink.com/page"
   const ctx = document.createElement("canvas").getContext("2d");
-  function recentre() {
+  let centredKey = null;
+  function recentre(instant = false) {
     const cs = getComputedStyle(document.body);
     ctx.font = `${cs.fontSize} ${cs.fontFamily}`;
     const ws = ctx.measureText(curSite().sub).width;
-    const wr = Math.max(...pagesList.map(p => ctx.measureText("/" + p).width));
-    lineEl.style.transform = `translateX(${(ws - wr) / 2}px)`;
+    let shift = ws / 2;
+    if (mode === "page") {
+      const page = pagesList[mod(Math.round(pg.pos), pg.n)];
+      shift = (ws - ctx.measureText("/" + page).width) / 2;
+    }
+    if (instant) lineEl.style.transition = "none";       // initial placement: no slide
+    lineEl.style.transform = `translateX(${shift}px)`;
+    if (instant) { void lineEl.offsetWidth; lineEl.style.transition = ""; }
   }
 
   // ── Stage changes ──────────────────────────────────────────────────────────
   function enterPages() {
     pageItems = curSite().pages; pagesList = pageItems.map(p => p.label);
     Object.assign(pg, { n: pageItems.length, pos: 0, vel: 0, target: null, dim: 0 });
-    mode = "page"; pageTouched = false; rightEl.classList.add("on"); recentre(); settledAt = null;
+    mode = "page"; pageTouched = false; rightEl.classList.add("on"); settledAt = null;
   }
   function backToDomains() {
-    mode = "domain"; rightEl.classList.remove("on"); lineEl.style.transform = "translateX(0)";
+    mode = "domain"; rightEl.classList.remove("on");
     holdIdx = mod(Math.round(dom.pos), dom.n); settledAt = null;
   }
   function startExit() {
@@ -160,6 +175,10 @@
       }
     }
     if (!exiting) isSettled = settled;   // keeps its last value while fading out to redirect
+    if (!exiting && settled) {           // slide the whole URL to centre each time a selection settles
+      const key = `${mode}:${mod(Math.round(dom.pos), dom.n)}:${mod(Math.round(pg.pos), pg.n)}`;
+      if (key !== centredKey) { centredKey = key; recentre(); }
+    }
     dom.dimTarget = mode === "page" ? 1 : 0;
     pg.dimTarget = exiting ? 1 : 0;
     [dom, pg].forEach(x => {
@@ -188,7 +207,7 @@
   // Trackpad / mouse wheel: free scroll (the OS supplies the momentum), then snaps to the nearest row
   let hx = 0, hxAt = 0;
   addEventListener("wheel", e => {
-    e.preventDefault(); if (!ready || exiting) return; touched();
+    e.preventDefault(); if (!ready) return; touched();
     if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {            // sideways trackpad swipe
       hx += e.deltaX; const t = performance.now();
       if (Math.abs(hx) > 60 && t - hxAt > 600) { hx > 0 ? forward() : back(); hx = 0; hxAt = t; }
@@ -200,7 +219,7 @@
 
   // Arrow keys: one step per press
   addEventListener("keydown", e => {
-    if (!ready || exiting) return;
+    if (!ready) return;
     const r = active();
     if (e.key === "ArrowDown" || e.key === "ArrowUp") {
       e.preventDefault(); touched();
@@ -208,18 +227,18 @@
       r.vel = 0;
     } else if (e.key === "ArrowRight") { touched(); forward(); }
     else if (e.key === "ArrowLeft") { touched(); back(); }
-    else if (e.key === "Enter") { touched(); mode === "domain" ? enterPages() : startExit(); }
+    else if (e.key === "Enter") { if (mode === "domain") { touched(); enterPages(); } else { started = true; startExit(); } }
   });
 
   // Touch: vertical drag follows the finger and keeps momentum; a sideways swipe moves between stages
   let sx = 0, sy = 0, lastY = 0, lastT = 0, axis = null, endX = 0;
   addEventListener("touchstart", e => {
-    if (!ready || exiting) return; touched();
+    if (!ready) return; touched();
     const r = active(); r.drag = true; r.vel = 0; r.target = null; axis = null;
     sx = endX = e.touches[0].clientX; sy = lastY = e.touches[0].clientY; lastT = performance.now();
   }, { passive: true });
   addEventListener("touchmove", e => {
-    e.preventDefault(); if (!ready || exiting) return;
+    e.preventDefault(); if (!ready) return;
     const r = active(), t = e.touches[0]; endX = t.clientX;
     if (!axis && Math.hypot(t.clientX - sx, t.clientY - sy) > 8)
       axis = Math.abs(t.clientX - sx) > Math.abs(t.clientY - sy) ? "x" : "y";
@@ -229,7 +248,7 @@
     lastY = t.clientY; lastT = performance.now(); lastInput = lastT;
   }, { passive: false });
   addEventListener("touchend", () => {
-    if (!ready || exiting) return;
+    if (!ready) return;
     const r = active(); r.drag = false;
     if (axis === "x") { r.vel = 0; const dx = sx - endX; if (dx > 50) forward(); else if (dx < -50) back(); }
     else if (performance.now() - lastT > 80) r.vel = 0;
