@@ -250,6 +250,10 @@
     requestAnimationFrame(tick);
   }
 
+  // Back/forward: browsers can restore this page frozen from their back-forward cache.
+  // Reload it so the opening spin and all input handling start fresh.
+  addEventListener("pageshow", e => { if (e.persisted) location.reload(); });
+
   // ── Input ──────────────────────────────────────────────────────────────────
   // Trackpad / mouse wheel: free scroll (the OS supplies the momentum), then snaps to the nearest row
   let hx = 0, hxAt = 0;
