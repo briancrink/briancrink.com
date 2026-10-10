@@ -167,14 +167,16 @@
   // Domain stage: "sub.briancrink.com" · Page stage: "sub.briancrink.com/page"
   const ctx = document.createElement("canvas").getContext("2d");
   let centredKey = null;
+  const centreKey = () => `${mode}:${mod(Math.round(dom.pos), dom.n)}`;   // page stage: fixed per subdomain
   function recentre(instant = false) {
     const cs = getComputedStyle(document.body);
     ctx.font = `${cs.fontSize} ${cs.fontFamily}`;
     const ws = ctx.measureText(curSite().sub).width;
     let shift = ws / 2;
     if (mode === "page") {
-      const page = pagesList[mod(Math.round(pg.pos), pg.n)];
-      shift = (ws - ctx.measureText("/" + page).width) / 2;
+      // Make room for the widest subpage up front, so none overflow while scrolling through them
+      const wr = Math.max(...pagesList.map(p => ctx.measureText("/" + p).width));
+      shift = (ws - wr) / 2;
     }
     if (instant) lineEl.style.transition = "none";       // initial placement: no slide
     lineEl.style.transform = `translateX(${shift}px)`;
@@ -188,6 +190,7 @@
     pageColors = pageItems.map(p => cmap[p.path] || null);
     Object.assign(pg, { n: pageItems.length, pos: 0, vel: 0, target: null, dim: 0 });
     mode = "page"; pageTouched = false; rightEl.classList.add("on"); settledAt = null;
+    recentre(); centredKey = centreKey();   // slide left now, as the subpages fade in
   }
   function backToDomains() {
     mode = "domain"; rightEl.classList.remove("on");
@@ -223,7 +226,7 @@
     }
     if (!exiting) isSettled = settled;   // keeps its last value while fading out to redirect
     if (!exiting && settled) {           // slide the whole URL to centre each time a selection settles
-      const key = `${mode}:${mod(Math.round(dom.pos), dom.n)}:${mod(Math.round(pg.pos), pg.n)}`;
+      const key = centreKey();
       if (key !== centredKey) { centredKey = key; recentre(); }
     }
     dom.dimTarget = mode === "page" ? 1 : 0;
