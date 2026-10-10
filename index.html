@@ -16,6 +16,7 @@
   body { display: flex; align-items: center; justify-content: center;
     font: 400 clamp(14px, 3.6vw, 40px)/1.5 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     color: var(--white); -webkit-user-select: none; user-select: none; }
+  @media (max-width: 768px) { body { font-size: clamp(15px, 4vw, 40px); } }   /* phones: a touch larger */
   .line { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
     align-items: center; width: 100%; transition: transform .8s cubic-bezier(.2,.8,.2,1); }
   .reel { position: relative; height: calc(var(--row) * 9);
@@ -24,6 +25,28 @@
   .item { position: absolute; left: 0; right: 0; top: 50%; height: var(--row);
     margin-top: calc(var(--row) / -2); line-height: var(--row); white-space: nowrap;
     color: var(--gray); transition: color .35s; will-change: transform, opacity; }
+  /* "portal" chroma gradient (same colours and timing as the 404 page) */
+  @property --pc1 { syntax: '<color>'; inherits: false; initial-value: #ff006e; }
+  @property --pc2 { syntax: '<color>'; inherits: false; initial-value: #8338ec; }
+  @property --pc3 { syntax: '<color>'; inherits: false; initial-value: #3a86ff; }
+  @property --pc4 { syntax: '<color>'; inherits: false; initial-value: #06d6a0; }
+  @property --pc5 { syntax: '<color>'; inherits: false; initial-value: #ffbe0b; }
+  @keyframes portalChromaFade {
+    0%   { --pc1: #ff006e; --pc2: #8338ec; --pc3: #3a86ff; --pc4: #06d6a0; --pc5: #ffbe0b; }
+    20%  { --pc1: #ffbe0b; --pc2: #ff006e; --pc3: #8338ec; --pc4: #3a86ff; --pc5: #06d6a0; }
+    40%  { --pc1: #06d6a0; --pc2: #ffbe0b; --pc3: #ff006e; --pc4: #8338ec; --pc5: #3a86ff; }
+    60%  { --pc1: #3a86ff; --pc2: #06d6a0; --pc3: #ffbe0b; --pc4: #ff006e; --pc5: #8338ec; }
+    80%  { --pc1: #8338ec; --pc2: #3a86ff; --pc3: #06d6a0; --pc4: #ffbe0b; --pc5: #ff006e; }
+    100% { --pc1: #ff006e; --pc2: #8338ec; --pc3: #3a86ff; --pc4: #06d6a0; --pc5: #ffbe0b; }
+  }
+  .item.chroma {
+    left: auto; width: fit-content;   /* shrink to the text so the gradient spans just the word */
+    background-image: linear-gradient(90deg, var(--pc1), var(--pc2), var(--pc3), var(--pc4), var(--pc5));
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent; -webkit-text-fill-color: transparent;
+    animation: portalChromaFade 8s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce) { .item.chroma { animation: none; } }
   .left .item { text-align: right; }
   .mid { color: var(--gray); white-space: pre; }
   .right { display: flex; align-items: center; opacity: 0; transition: opacity .6s; pointer-events: none; }
@@ -48,7 +71,14 @@
   const ROOT_HOST = "briancrink.com";       // the root entry in the sitemap is skipped (it isn't a subdomain)
   const HIDDEN_STATUSES = ["unlisted"];     // availability statuses left out of the reels
   const PAGE_LABEL = "path";                // "path" -> docs, adopt/cat   |   "title" -> API Docs, Adopt a Cat
-  const START_SUBDOMAIN = "home";           // which subdomain the reel opens on
+  const START_SUBDOMAIN = "portal";         // the subdomain the opening spin lands on
+  const INTRO_MS = 3200;                    // length of the opening spin (ease in, ease out)
+  const CHROMA_SUBDOMAIN = "portal";        // this subdomain gets the animated gradient when selected
+  // Subpage text colours on settle, taken from the portal page's OS titles (.world h2):
+  // life = blue, dev = green, career = purple, boss = orange. Keyed by subdomain, then subpage path.
+  const PAGE_COLORS = {
+    portal: { "#life": "#b5e8ffbc", "#dev": "#b0ffcdd0", "#career": "#ab7affda", "#boss": "#ffdbb5c2" },
+  };
   const DELAY = 1000, DEFAULT_PAGE_WAIT = 7000;
   const FADE_OUT_MS = 2200, FADE_IN_MS = 600, REDIRECT_PAUSE = 2000;
 
@@ -65,19 +95,19 @@
   measure(); addEventListener("resize", measure);
 
   const mk = n => ({ n, pos: 0, vel: 0, target: null, drag: false, dim: 0, dimTarget: 0 });
-  let SITES = [], subLabels = [""], pageItems = [], pagesList = [""];
+  let SITES = [], subLabels = [""], pageItems = [], pagesList = [""], pageColors = [];
   const dom = mk(1), pg = mk(1);
   const build = el => Array.from({ length: ROWS }, () => {
     const d = document.createElement("div"); d.className = "item"; el.appendChild(d); return d; });
   const domRows = build($("domReel")), pgRows = build($("pgReel"));
 
-  let ready = false, mode = "domain", holdIdx = null, pageTouched = false, isSettled = false;
+  let intro = null, ready = false, mode = "domain", holdIdx = null, pageTouched = false, isSettled = false;
   let lastInput = 0, settledAt = null, started = false, exiting = false, exitAt = 0;
   const active = () => (mode === "domain" ? dom : pg);
   // Any input counts as activity: it also cancels a fade-out that is already under way,
   // so the other subpages fade back in and the wait starts over.
   const touched = () => {
-    started = true;
+    started = true; intro = null;      // input also ends the opening spin where it is
     if (mode === "page") pageTouched = true;
     if (exiting) { exiting = false; settledAt = null; }
   };
@@ -94,6 +124,7 @@
           const pages = (d.pages || []).filter(visible).map(p => ({
             label: PAGE_LABEL === "title" ? p.title : String(p.path || "").replace(/^\//, ""),
             url: p.url || `${d.url}${p.path || ""}`,
+            path: String(p.path || "").replace(/^\//, ""),
           }));
           pages.unshift({ label: "", url: d.url });   // blank first subpage = the subdomain's root, always the default
           return { sub: d.subdomain, url: d.url, pages };
@@ -101,17 +132,22 @@
       if (!SITES.length) throw new Error("no domains");
       subLabels = SITES.map(s => s.sub);
       dom.n = SITES.length;
-      dom.pos = Math.max(0, SITES.findIndex(s => s.sub === START_SUBDOMAIN));
+      const end = Math.max(0, SITES.findIndex(s => s.sub === START_SUBDOMAIN));
+      dom.pos = end;
       hintEl.textContent = "scroll / swipe / ↑ ↓ to move · → select · ← back · enter to go";
       ready = true;
-      recentre(true);   // centre the first view immediately, before anything is drawn
+      recentre(true);   // centre the landing subdomain immediately, before anything is drawn
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {   // opening spin: one full loop plus a bit
+        const start = end - (dom.n + 8);
+        dom.pos = start; intro = { start, end, t0: null };
+      }
       requestAnimationFrame(tick);
     })
     .catch(err => { hintEl.textContent = "couldn't load sitemap.json"; console.error(err); });
 
   // ── Drawing ────────────────────────────────────────────────────────────────
   // Chosen row stays; the rest fade by r.dim (0 = all visible, 1 = only the chosen row)
-  function draw(r, rows, list, white) {
+  function draw(r, rows, list, white, chromaLabel, colors) {
     const base = Math.round(r.pos), frac = r.pos - base;
     rows.forEach((el, j) => {
       const k = j - MID, d = k - frac, label = list[mod(base + k, list.length)];
@@ -120,7 +156,10 @@
       if (k !== 0) o *= 1 - r.dim * r.dim * (3 - 2 * r.dim);   // smoothstep ease
       el.style.transform = `translateY(${d * rowPx}px)`;
       el.style.opacity = o.toFixed(3);
-      el.style.color = k === 0 && white ? "#fff" : "";
+      const chroma = k === 0 && white && label === chromaLabel;
+      el.classList.toggle("chroma", chroma);
+      const custom = k === 0 && white && colors && colors[mod(base + k, list.length)];
+      el.style.color = chroma ? "" : custom || (k === 0 && white ? "#fff" : "");
     });
   }
 
@@ -145,6 +184,8 @@
   // ── Stage changes ──────────────────────────────────────────────────────────
   function enterPages() {
     pageItems = curSite().pages; pagesList = pageItems.map(p => p.label);
+    const cmap = PAGE_COLORS[curSite().sub] || {};
+    pageColors = pageItems.map(p => cmap[p.path] || null);
     Object.assign(pg, { n: pageItems.length, pos: 0, vel: 0, target: null, dim: 0 });
     mode = "page"; pageTouched = false; rightEl.classList.add("on"); settledAt = null;
   }
@@ -165,7 +206,13 @@
   function tick(now) {
     const dt = prevT ? Math.min(now - prevT, 100) : 16; prevT = now;
     const r = active(); let settled = false;
-    if (!exiting && !r.drag && now - lastInput > 120) {
+    if (intro) {                          // opening spin: smooth ease-in-out toward the landing subdomain
+      if (intro.t0 === null) intro.t0 = now;
+      const t = Math.min(1, (now - intro.t0) / INTRO_MS);
+      const e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      dom.pos = intro.start + (intro.end - intro.start) * e;
+      if (t >= 1) { dom.pos = intro.end; intro = null; }
+    } else if (!exiting && !r.drag && now - lastInput > 120) {
       if (Math.abs(r.vel) > 0.02) { r.pos += r.vel; r.vel *= 0.95; r.target = null; }
       else {
         r.vel = 0;
@@ -185,8 +232,8 @@
       const step = dt / (x.dimTarget ? FADE_OUT_MS : FADE_IN_MS);
       x.dim = x.dimTarget ? Math.min(1, x.dim + step) : Math.max(0, x.dim - step);
     });
-    draw(dom, domRows, subLabels, mode === "page" || isSettled);
-    draw(pg, pgRows, pagesList, mode === "page" && isSettled);
+    draw(dom, domRows, subLabels, mode === "page" || isSettled, CHROMA_SUBDOMAIN);
+    draw(pg, pgRows, pagesList, mode === "page" && isSettled, null, pageColors);
 
     if (exiting) { if (now >= exitAt) { go(); return; } }
     else {
