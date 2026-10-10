@@ -72,7 +72,8 @@
   const HIDDEN_STATUSES = ["unlisted"];     // availability statuses left out of the reels
   const PAGE_LABEL = "path";                // "path" -> docs, adopt/cat   |   "title" -> API Docs, Adopt a Cat
   const START_SUBDOMAIN = "portal";         // the subdomain the opening spin lands on
-  const INTRO_MS = 3200;                    // length of the opening spin (ease in, ease out)
+  const INTRO_MS = 3200;                    // length of the opening subdomain spin (ease in, ease out)
+  const PAGE_INTRO_MS = 2600;               // length of the subpage spin when the subpages appear
   const CHROMA_SUBDOMAIN = "portal";        // this subdomain gets the animated gradient when selected
   // Subpage text colours on settle, taken from the portal page's OS titles (.world h2):
   // life = blue, dev = green, career = purple, boss = orange. Keyed by subdomain, then subpage path.
@@ -134,12 +135,12 @@
       dom.n = SITES.length;
       const end = Math.max(0, SITES.findIndex(s => s.sub === START_SUBDOMAIN));
       dom.pos = end;
-      hintEl.textContent = "scroll / swipe / ↑ ↓ to move · → select · ← back · enter to go";
+      hintEl.textContent = "scroll / swipe / ↑ ↓ to move · → select · ← back · enter / click / tap to select";
       ready = true;
       recentre(true);   // centre the landing subdomain immediately, before anything is drawn
       if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {   // opening spin: one full loop plus a bit
         const start = end - (dom.n + 8);
-        dom.pos = start; intro = { start, end, t0: null };
+        dom.pos = start; intro = { reel: dom, start, end, t0: null, ms: INTRO_MS };
       }
       requestAnimationFrame(tick);
     })
@@ -191,6 +192,10 @@
     Object.assign(pg, { n: pageItems.length, pos: 0, vel: 0, target: null, dim: 0 });
     mode = "page"; pageTouched = false; rightEl.classList.add("on"); settledAt = null;
     recentre(); centredKey = centreKey();   // slide left now, as the subpages fade in
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {   // spin through the subpages, landing on the blank default
+      const start = -(pg.n + 8);
+      pg.pos = start; intro = { reel: pg, start, end: 0, t0: null, ms: PAGE_INTRO_MS };
+    }
   }
   function backToDomains() {
     mode = "domain"; rightEl.classList.remove("on");
@@ -201,6 +206,12 @@
     exiting = true; exitAt = performance.now() + FADE_OUT_MS + REDIRECT_PAUSE;
   }
   function go() { location.href = pageItems[mod(Math.round(pg.pos), pg.n)].url; }
+  // Enter, a click or a tap all mean "select what is chosen"; ignored while a spin is still running
+  function selectCurrent() {
+    if (!ready || intro) return;
+    if (mode === "domain") { touched(); enterPages(); }
+    else { started = true; startExit(); }
+  }
   const forward = () => { if (mode === "domain") enterPages(); };
   const back = () => { if (mode === "page") backToDomains(); };
 
@@ -209,12 +220,12 @@
   function tick(now) {
     const dt = prevT ? Math.min(now - prevT, 100) : 16; prevT = now;
     const r = active(); let settled = false;
-    if (intro) {                          // opening spin: smooth ease-in-out toward the landing subdomain
+    if (intro) {                          // spin: smooth ease-in-out toward the landing row
       if (intro.t0 === null) intro.t0 = now;
-      const t = Math.min(1, (now - intro.t0) / INTRO_MS);
+      const t = Math.min(1, (now - intro.t0) / intro.ms);
       const e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-      dom.pos = intro.start + (intro.end - intro.start) * e;
-      if (t >= 1) { dom.pos = intro.end; intro = null; }
+      intro.reel.pos = intro.start + (intro.end - intro.start) * e;
+      if (t >= 1) { intro.reel.pos = intro.end; intro = null; }
     } else if (!exiting && !r.drag && now - lastInput > 120) {
       if (Math.abs(r.vel) > 0.02) { r.pos += r.vel; r.vel *= 0.95; r.target = null; }
       else {
@@ -281,14 +292,16 @@
       r.vel = 0;
     } else if (e.key === "ArrowRight") { touched(); forward(); }
     else if (e.key === "ArrowLeft") { touched(); back(); }
-    else if (e.key === "Enter") { if (mode === "domain") { touched(); enterPages(); } else { started = true; startExit(); } }
+    else if (e.key === "Enter") selectCurrent();
   });
 
+  addEventListener("click", selectCurrent);
+
   // Touch: vertical drag follows the finger and keeps momentum; a sideways swipe moves between stages
-  let sx = 0, sy = 0, lastY = 0, lastT = 0, axis = null, endX = 0;
+  let sx = 0, sy = 0, lastY = 0, lastT = 0, axis = null, endX = 0, moved = false, tapT = 0;
   addEventListener("touchstart", e => {
-    if (!ready) return; touched();
-    const r = active(); r.drag = true; r.vel = 0; r.target = null; axis = null;
+    if (!ready) return;                 // a plain tap changes nothing until it ends (see touchend)
+    const r = active(); r.drag = true; r.vel = 0; r.target = null; axis = null; moved = false; tapT = performance.now();
     sx = endX = e.touches[0].clientX; sy = lastY = e.touches[0].clientY; lastT = performance.now();
   }, { passive: true });
   addEventListener("touchmove", e => {
@@ -296,13 +309,17 @@
     const r = active(), t = e.touches[0]; endX = t.clientX;
     if (!axis && Math.hypot(t.clientX - sx, t.clientY - sy) > 8)
       axis = Math.abs(t.clientX - sx) > Math.abs(t.clientY - sy) ? "x" : "y";
+    if (axis && !moved) { moved = true; touched(); }   // real movement counts as input
     if (axis !== "y") return;
     const dy = (lastY - t.clientY) / rowPx;
     r.pos += dy; r.vel = Math.max(-1.5, Math.min(1.5, r.vel * 0.6 + dy * 0.4));
     lastY = t.clientY; lastT = performance.now(); lastInput = lastT;
   }, { passive: false });
-  addEventListener("touchend", () => {
+  addEventListener("touchend", e => {
     if (!ready) return;
+    if (axis === null && performance.now() - tapT < 500) {   // a tap: same as pressing Enter
+      active().drag = false; e.preventDefault(); selectCurrent(); return;
+    }
     const r = active(); r.drag = false;
     if (axis === "x") { r.vel = 0; const dx = sx - endX; if (dx > 50) forward(); else if (dx < -50) back(); }
     else if (performance.now() - lastT > 80) r.vel = 0;
