@@ -54,7 +54,13 @@
   .slash { color: var(--gray); }
   .right .reel { flex: 1; min-width: 0; }
   .hint { position: fixed; bottom: max(24px, env(safe-area-inset-bottom)); left: 0; right: 0;
-    text-align: center; font-size: 12px; color: #444; }
+    text-align: center; font-size: 13px; line-height: 1.8; color: var(--gray);
+    opacity: 0; transition: opacity .6s; pointer-events: none; }
+  .hint.show { opacity: 1; }
+  .hint div { transition: color .4s; min-height: 1.8em; }
+  .hint .rec { animation: hintFlash 2.6s ease-in-out infinite; }   /* the recommended action */
+  @keyframes hintFlash { 0%, 100% { color: #fff; } 50% { color: var(--gray); } }
+  @media (prefers-reduced-motion: reduce) { .hint .rec { animation: none; color: #fff; } }
   </style>
   </head>
   <body>
@@ -63,7 +69,7 @@
       <div class="mid">.briancrink.com</div>
       <div class="right" id="right"><span class="slash">/</span><div class="reel" id="pgReel"></div></div>
     </div>
-    <div class="hint" id="hint">loading…</div>
+    <div class="hint show" id="hint"><div id="hintA">loading…</div><div id="hintB"></div></div>
 
   <script>
   // ── Configuration ──────────────────────────────────────────────────────────
@@ -85,7 +91,7 @@
 
   // ── State ──────────────────────────────────────────────────────────────────
   const $ = id => document.getElementById(id);
-  const lineEl = $("line"), rightEl = $("right"), hintEl = $("hint");
+  const lineEl = $("line"), rightEl = $("right"), hintEl = $("hint"), hintA = $("hintA"), hintB = $("hintB");
   const mod = (a, n) => ((a % n) + n) % n;
   const ROWS = 9, MID = 4;
   let rowPx = 48;
@@ -102,15 +108,15 @@
     const d = document.createElement("div"); d.className = "item"; el.appendChild(d); return d; });
   const domRows = build($("domReel")), pgRows = build($("pgReel"));
 
-  let intro = null, ready = false, mode = "domain", holdIdx = null, pageTouched = false, isSettled = false;
+  let acted = false, intro = null, ready = false, mode = "domain", holdIdx = null, pageTouched = false, isSettled = false;
   let lastInput = 0, settledAt = null, started = false, exiting = false, exitAt = 0;
   const active = () => (mode === "domain" ? dom : pg);
   // Any input counts as activity: it also cancels a fade-out that is already under way,
   // so the other subpages fade back in and the wait starts over.
   const touched = () => {
-    started = true; intro = null;      // input also ends the opening spin where it is
+    started = true; acted = true; intro = null;      // input also ends a spin where it is
     if (mode === "page") pageTouched = true;
-    if (exiting) { exiting = false; settledAt = null; }
+    if (exiting) { exiting = false; settledAt = null; if (mode === "page") recentre(); }
   };
   const curSite = () => SITES[mod(Math.round(dom.pos), dom.n)];
   const visible = o => !HIDDEN_STATUSES.includes(o?.availability?.status);
@@ -135,7 +141,6 @@
       dom.n = SITES.length;
       const end = Math.max(0, SITES.findIndex(s => s.sub === START_SUBDOMAIN));
       dom.pos = end;
-      hintEl.textContent = "scroll / swipe / ↑ ↓ to move · → select · ← back · enter / click / tap to select";
       ready = true;
       recentre(true);   // centre the landing subdomain immediately, before anything is drawn
       if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {   // opening spin: one full loop plus a bit
@@ -144,7 +149,7 @@
       }
       requestAnimationFrame(tick);
     })
-    .catch(err => { hintEl.textContent = "couldn't load sitemap.json"; console.error(err); });
+    .catch(err => { hintA.textContent = "couldn't load the site map"; console.error(err); });
 
   // ── Drawing ────────────────────────────────────────────────────────────────
   // Chosen row stays; the rest fade by r.dim (0 = all visible, 1 = only the chosen row)
@@ -169,14 +174,17 @@
   const ctx = document.createElement("canvas").getContext("2d");
   let centredKey = null;
   const centreKey = () => `${mode}:${mod(Math.round(dom.pos), dom.n)}`;   // page stage: fixed per subdomain
-  function recentre(instant = false) {
+  function recentre(instant = false, exact = false) {
     const cs = getComputedStyle(document.body);
     ctx.font = `${cs.fontSize} ${cs.fontFamily}`;
     const ws = ctx.measureText(curSite().sub).width;
     let shift = ws / 2;
     if (mode === "page") {
-      // Make room for the widest subpage up front, so none overflow while scrolling through them
-      const wr = Math.max(...pagesList.map(p => ctx.measureText("/" + p).width));
+      // Scrolling: make room for the widest subpage up front so none overflow.
+      // Choosing (exact): centre the chosen subpage's URL while the others fade out.
+      const wr = exact
+        ? ctx.measureText("/" + pagesList[mod(Math.round(pg.pos), pg.n)]).width
+        : Math.max(...pagesList.map(p => ctx.measureText("/" + p).width));
       shift = (ws - wr) / 2;
     }
     if (instant) lineEl.style.transition = "none";       // initial placement: no slide
@@ -190,7 +198,7 @@
     const cmap = PAGE_COLORS[curSite().sub] || {};
     pageColors = pageItems.map(p => cmap[p.path] || null);
     Object.assign(pg, { n: pageItems.length, pos: 0, vel: 0, target: null, dim: 0 });
-    mode = "page"; pageTouched = false; rightEl.classList.add("on"); settledAt = null;
+    mode = "page"; pageTouched = false; acted = false; rightEl.classList.add("on"); settledAt = null;
     recentre(); centredKey = centreKey();   // slide left now, as the subpages fade in
     if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {   // spin through the subpages, landing on the blank default
       const start = -(pg.n + 8);
@@ -198,12 +206,14 @@
     }
   }
   function backToDomains() {
-    mode = "domain"; rightEl.classList.remove("on");
+    mode = "domain"; acted = false; rightEl.classList.remove("on");
     holdIdx = mod(Math.round(dom.pos), dom.n); settledAt = null;
   }
   function startExit() {
     if (exiting) return;
     exiting = true; exitAt = performance.now() + FADE_OUT_MS + REDIRECT_PAUSE;
+    pg.vel = 0; pg.target = Math.round(pg.pos);   // settle onto the chosen row even if it was still moving
+    recentre(false, true);                         // glide to centre the chosen URL as the others fade
   }
   function go() { location.href = pageItems[mod(Math.round(pg.pos), pg.n)].url; }
   // Enter, a click or a tap all mean "select what is chosen"; ignored while a spin is still running
@@ -214,6 +224,25 @@
   }
   const forward = () => { if (mode === "domain") enterPages(); };
   const back = () => { if (mode === "page") backToDomains(); };
+
+  // ── Bottom hint: only the actions for this device; the recommended next action flashes ──
+  const IS_TOUCH = matchMedia("(hover: none) and (pointer: coarse)").matches;
+  const HINTS = IS_TOUCH ? {
+    domain: { scroll: "Swipe ↑ or ↓", select: "Tap or Swipe →" },
+    page:   { scroll: "Swipe ↑ or ↓", select: "Tap to select · Swipe ← to go back" },
+  } : {
+    domain: { scroll: "Scroll", select: "Click, Enter, or →" },
+    page:   { scroll: "Scroll", select: "Click, Enter, or Swipe ←" },
+  };
+  let hintKey = "";
+  function updateHint() {
+    hintEl.classList.toggle("show", ready && !intro && !exiting);   // hidden during spins and the exit fade
+    const key = mode + acted;                                       // scroll is recommended until the user acts, then select
+    if (key === hintKey) return;
+    hintKey = key;
+    hintA.textContent = HINTS[mode].scroll; hintB.textContent = HINTS[mode].select;
+    hintA.classList.toggle("rec", !acted); hintB.classList.toggle("rec", acted);
+  }
 
   // ── Main loop ──────────────────────────────────────────────────────────────
   let prevT = 0;
@@ -226,7 +255,7 @@
       const e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
       intro.reel.pos = intro.start + (intro.end - intro.start) * e;
       if (t >= 1) { intro.reel.pos = intro.end; intro = null; }
-    } else if (!exiting && !r.drag && now - lastInput > 120) {
+    } else if (!r.drag && now - lastInput > 120) {
       if (Math.abs(r.vel) > 0.02) { r.pos += r.vel; r.vel *= 0.95; r.target = null; }
       else {
         r.vel = 0;
@@ -235,7 +264,7 @@
         else r.pos += d * 0.16;
       }
     }
-    if (!exiting) isSettled = settled;   // keeps its last value while fading out to redirect
+    isSettled = exiting || settled;      // the chosen subpage shows its settled colour while fading out
     if (!exiting && settled) {           // slide the whole URL to centre each time a selection settles
       const key = centreKey();
       if (key !== centredKey) { centredKey = key; recentre(); }
@@ -248,6 +277,7 @@
     });
     draw(dom, domRows, subLabels, mode === "page" || isSettled, CHROMA_SUBDOMAIN);
     draw(pg, pgRows, pagesList, mode === "page" && isSettled, null, pageColors);
+    updateHint();
 
     if (exiting) { if (now >= exitAt) { go(); return; } }
     else {
@@ -275,7 +305,7 @@
     e.preventDefault(); if (!ready) return; touched();
     if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {            // sideways trackpad swipe
       hx += e.deltaX; const t = performance.now();
-      if (Math.abs(hx) > 60 && t - hxAt > 600) { hx > 0 ? forward() : back(); hx = 0; hxAt = t; }
+      if (Math.abs(hx) > 60 && t - hxAt > 600) { hx > 0 ? back() : forward(); hx = 0; hxAt = t; }
       return;
     }
     const r = active(); let dy = e.deltaY; if (e.deltaMode === 1) dy *= 33;
@@ -321,7 +351,7 @@
       active().drag = false; e.preventDefault(); selectCurrent(); return;
     }
     const r = active(); r.drag = false;
-    if (axis === "x") { r.vel = 0; const dx = sx - endX; if (dx > 50) forward(); else if (dx < -50) back(); }
+    if (axis === "x") { r.vel = 0; const dx = sx - endX; if (dx > 50) back(); else if (dx < -50) forward(); }
     else if (performance.now() - lastT > 80) r.vel = 0;
     lastInput = 0;
   });
