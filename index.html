@@ -18,7 +18,9 @@
     color: var(--white); -webkit-user-select: none; user-select: none; }
   @media (max-width: 768px) { body { font-size: clamp(15px, 4vw, 40px); } }   /* phones: a touch larger */
   .line { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
-    align-items: center; width: 100%; transition: transform .8s cubic-bezier(.2,.8,.2,1); }
+    align-items: center; width: 100%; opacity: 0;
+    transition: transform .8s cubic-bezier(.2,.8,.2,1), opacity 1.6s ease; }
+  .line.ready { opacity: 1; }
   .reel { position: relative; height: calc(var(--row) * 9);
     -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
             mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent); }
@@ -69,7 +71,7 @@
       <div class="mid">.briancrink.com</div>
       <div class="right" id="right"><span class="slash">/</span><div class="reel" id="pgReel"></div></div>
     </div>
-    <div class="hint show" id="hint"><div id="hintA">loading…</div><div id="hintB"></div></div>
+    <div class="hint" id="hint"><div id="hintA"></div><div id="hintB"></div></div>
 
   <script>
   // ── Configuration ──────────────────────────────────────────────────────────
@@ -149,7 +151,7 @@
       }
       requestAnimationFrame(tick);
     })
-    .catch(err => { hintA.textContent = "couldn't load the site map"; console.error(err); });
+    .catch(err => { hintA.textContent = "couldn't load the site map"; hintEl.classList.add("show"); console.error(err); });
 
   // ── Drawing ────────────────────────────────────────────────────────────────
   // Chosen row stays; the rest fade by r.dim (0 = all visible, 1 = only the chosen row)
@@ -245,7 +247,7 @@
   }
 
   // ── Main loop ──────────────────────────────────────────────────────────────
-  let prevT = 0;
+  let prevT = 0, shown = false;
   function tick(now) {
     const dt = prevT ? Math.min(now - prevT, 100) : 16; prevT = now;
     const r = active(); let settled = false;
@@ -278,6 +280,7 @@
     draw(dom, domRows, subLabels, mode === "page" || isSettled, CHROMA_SUBDOMAIN);
     draw(pg, pgRows, pagesList, mode === "page" && isSettled, null, pageColors);
     updateHint();
+    if (!shown) { shown = true; lineEl.classList.add("ready"); }   // soft fade-in, once everything is placed
 
     if (exiting) { if (now >= exitAt) { go(); return; } }
     else {
@@ -296,6 +299,7 @@
 
   // Back/forward: browsers can restore this page frozen from their back-forward cache.
   // Reload it so the opening spin and all input handling start fresh.
+  addEventListener("pagehide", () => { document.documentElement.style.visibility = "hidden"; });   // restored page stays black until the reload
   addEventListener("pageshow", e => { if (e.persisted) location.reload(); });
 
   // ── Input ──────────────────────────────────────────────────────────────────
